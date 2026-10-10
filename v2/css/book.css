@@ -19,14 +19,14 @@
 }
 
 .book__part + .book__part {
-  border-left: 0.5px solid var(--c-ink);
+  border-left: 0.5px solid var(--c-rule);
 }
 
 /* 번호 — 왼쪽 위 */
 .book__no {
   position: absolute;
   left: calc(60 * var(--px));
-  top: calc(30 * var(--px));
+  top: calc(84 * var(--px)); /* 메뉴 탭 아래 */
   font-weight: 700;
   font-size: calc(90 * var(--px));
   letter-spacing: -0.02em;

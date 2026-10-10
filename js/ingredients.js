@@ -6,7 +6,7 @@
    ========================================================= */
 
 BR.pages.ingredients = (() => {
-  let root, cols, table, thumb, track, toggle;
+  let root, cols, table, thumb, track, toggle, wheel;
 
   const renderColumns = () =>
     BR.ingredients
@@ -103,7 +103,7 @@ BR.pages.ingredients = (() => {
     cols.addEventListener("scroll", syncThumb, { passive: true });
     window.addEventListener("resize", syncThumb);
     enableThumbDrag();
-    enableWheel();
+    wheel = enableWheel();
 
     // 컬럼 클릭 → 활성 고정 (다시 누르면 해제)
     cols.addEventListener("click", (e) => {
@@ -124,7 +124,15 @@ BR.pages.ingredients = (() => {
     });
   };
 
-  const enter = () => requestAnimationFrame(syncThumb);
+  // 들어올 때마다 처음 상태: 컬럼 보기 · 맨 왼쪽 · 고정된 컬럼 없음
+  const enter = () => {
+    setTableView(false);
+    cols.querySelectorAll(".ing-col.is-active").forEach((c) => c.classList.remove("is-active"));
+    wheel.reset();
+    cols.scrollLeft = 0;
+    wheel.reset();
+    requestAnimationFrame(syncThumb);
+  };
 
   return { init, enter };
 })();

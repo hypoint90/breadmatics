@@ -44,18 +44,20 @@
 
 /* ---------- 가운데 패널 ---------- */
 /* 뒤 글자가 비쳐 보이도록 반투명 + 흐림 (레시피 화면 수식 흐림과 같은 결) */
+/* 2안: 화면 위아래에서 띄운 떠 있는 카드 — 아주 옅은 회색 반투명 + 흐림 (뒤에 쌓이는 글자가 흐리게 비침) */
 .mk-panel {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: calc(28 * var(--px));
+  bottom: calc(28 * var(--px));
   left: 50%;
   width: calc(754 * var(--px));
   transform: translateX(-50%);
-  border-left: 0.5px solid var(--c-ink);
-  border-right: 0.5px solid var(--c-ink);
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(calc(14 * var(--px)));
-  backdrop-filter: blur(calc(14 * var(--px)));
+  background: rgba(244, 245, 245, 0.42);
+  -webkit-backdrop-filter: blur(calc(18 * var(--px)));
+  backdrop-filter: blur(calc(18 * var(--px)));
+  /* 아래로 떨어지는 그림자 — 뒤에 쌓이는 글자와 거리감 */
+  box-shadow: 0 0 0 0.5px rgba(28, 28, 28, 0.08), 0 calc(8 * var(--px)) calc(20 * var(--px)) rgba(28, 28, 28, 0.06),
+    0 calc(36 * var(--px)) calc(90 * var(--px)) rgba(28, 28, 28, 0.16);
   transition: opacity var(--dur-base) var(--ease-out);
 }
 
@@ -112,14 +114,16 @@
   transition: opacity 0.3s var(--ease-out);
 }
 
-/* 진행 표시 (3 / 8) — 피그마: 오른쪽 위 */
+/* 진행 표시 (3 / 16) — 2안: 박스 위쪽 가운데, 작게 */
 .mk-q__count {
   position: absolute;
-  right: calc(24 * var(--px));
-  top: calc(24 * var(--px));
-  font-size: calc(24 * var(--px));
-  letter-spacing: -0.02em;
-  line-height: 0.9;
+  left: 50%;
+  top: calc(26 * var(--px));
+  translate: -50% 0; /* 박스 가로 가운데 */
+  font-size: calc(14 * var(--px));
+  letter-spacing: 0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 이전 — 왼쪽 위 (진행 표시와 마주 보게) */
@@ -150,7 +154,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(274.5 * var(--px));
+  top: calc(220 * var(--px)); /* 2안: 위로 (전 274.5) */
   translate: 0 -50%;
   text-align: center;
 }
@@ -176,7 +180,7 @@
   position: absolute;
   left: calc(46 * var(--px));
   right: calc(46 * var(--px));
-  top: calc(507 * var(--px));
+  top: calc(390 * var(--px)); /* 2안: 선택 박스를 위로 (전 507) */
 }
 
 /* 선택지가 많은 문항은 조금 위에서 시작 */
@@ -408,7 +412,7 @@
 .mk-q__next {
   position: absolute;
   left: 50%;
-  top: calc(780 * var(--px));
+  top: calc(720 * var(--px)); /* 2안: 위로 (전 780) */
   translate: -50% -50%;
   display: flex;
   align-items: center;
@@ -464,8 +468,8 @@
   gap: calc(16 * var(--px));
   width: calc(321 * var(--px));
   height: 100%;
-  padding: calc(30 * var(--px)) calc(40 * var(--px));
-  border-right: 0.5px solid var(--c-ink);
+  padding: calc(84 * var(--px)) calc(40 * var(--px)) calc(30 * var(--px)); /* 위: 메뉴 탭 아래 */
+  border-right: 0.5px solid var(--c-rule);
   overflow-y: auto;
   font-family: var(--f-kr);
   color: var(--c-ink);
@@ -547,7 +551,7 @@
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  padding: calc(20 * var(--px)) calc(60 * var(--px)) calc(40 * var(--px));
+  padding: calc(64 * var(--px)) calc(60 * var(--px)) calc(40 * var(--px));
   font-family: var(--f-formula);
   line-height: 1.3;
   letter-spacing: -0.03em;
@@ -593,4 +597,122 @@
     color: var(--c-ink);
     -webkit-text-stroke: 0;
   }
+}
+
+/* ---------- 레시피 모음 — 결과 화면 오른쪽 (이곳에서 만들어진 빵, 최신이 위) ---------- */
+.mk-col {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: calc(300 * var(--px));
+  height: 100%;
+  padding: calc(84 * var(--px)) 0 calc(30 * var(--px));
+  border-left: 0.5px solid var(--c-rule);
+  font-family: var(--f-kr);
+  color: var(--c-ink);
+}
+
+.mk-col__head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 calc(24 * var(--px)) calc(12 * var(--px));
+  border-bottom: 0.5px solid var(--c-rule);
+  font-size: calc(12 * var(--px));
+  font-weight: 500;
+  color: #80807c;
+}
+
+.mk-col__head span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.mk-col__list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mk-col__list::-webkit-scrollbar {
+  display: none;
+}
+
+/* 한 건: 번호 · 이름 / 종류 · 날짜 / 첫 수식 줄 */
+.mk-col__item {
+  display: grid;
+  grid-template-columns: calc(30 * var(--px)) 1fr;
+  row-gap: calc(4 * var(--px));
+  width: 100%;
+  padding: calc(14 * var(--px)) calc(24 * var(--px));
+  border-bottom: 0.5px solid var(--c-line);
+  text-align: left;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.mk-col__item > span:not(.mk-col__no) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.mk-col__no {
+  grid-row: 1 / span 3;
+  font-size: calc(11 * var(--px));
+  font-variant-numeric: tabular-nums;
+  color: #80807c;
+  padding-top: calc(3 * var(--px));
+}
+
+.mk-col__name {
+  font-size: calc(15 * var(--px));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  word-break: keep-all;
+}
+
+.mk-col__name em {
+  margin-left: calc(8 * var(--px));
+  font-style: normal;
+  font-size: calc(10 * var(--px));
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #80807c;
+}
+
+.mk-col__meta {
+  font-size: calc(11 * var(--px));
+  color: #80807c;
+}
+
+.mk-col__eq {
+  overflow: hidden;
+  font-family: var(--f-formula);
+  font-size: calc(13 * var(--px));
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mk-col__item:hover {
+  background: #f2f2f0;
+}
+
+/* 지금 보고 있는 빵 */
+.mk-col__item.is-current {
+  background: var(--c-ink);
+  color: var(--c-white);
+  cursor: default;
+}
+
+.mk-col__item.is-current .mk-col__no,
+.mk-col__item.is-current .mk-col__meta,
+.mk-col__item.is-current .mk-col__name em {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 수식이 길어 넘칠 때는 휠로 스크롤 — 기본 스크롤바는 숨김 */
+.mk-res__formula {
+  scrollbar-width: none;
+}
+
+.mk-res__formula::-webkit-scrollbar {
+  display: none;
 }

@@ -594,3 +594,121 @@
     -webkit-text-stroke: 0;
   }
 }
+
+/* ---------- 레시피 모음 — 결과 화면 오른쪽 (이곳에서 만들어진 빵, 최신이 위) ---------- */
+.mk-col {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: calc(300 * var(--px));
+  height: 100%;
+  padding: calc(30 * var(--px)) 0;
+  border-left: 0.5px solid var(--c-line-dark);
+  font-family: var(--f-kr);
+  color: var(--c-ink);
+}
+
+.mk-col__head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 calc(24 * var(--px)) calc(12 * var(--px));
+  border-bottom: 0.5px solid var(--c-line-dark);
+  font-size: calc(12 * var(--px));
+  font-weight: 500;
+  color: #80807c;
+}
+
+.mk-col__head span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.mk-col__list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mk-col__list::-webkit-scrollbar {
+  display: none;
+}
+
+/* 한 건: 번호 · 이름 / 종류 · 날짜 / 첫 수식 줄 */
+.mk-col__item {
+  display: grid;
+  grid-template-columns: calc(30 * var(--px)) 1fr;
+  row-gap: calc(4 * var(--px));
+  width: 100%;
+  padding: calc(14 * var(--px)) calc(24 * var(--px));
+  border-bottom: 0.5px solid var(--c-line);
+  text-align: left;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.mk-col__item > span:not(.mk-col__no) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.mk-col__no {
+  grid-row: 1 / span 3;
+  font-size: calc(11 * var(--px));
+  font-variant-numeric: tabular-nums;
+  color: #80807c;
+  padding-top: calc(3 * var(--px));
+}
+
+.mk-col__name {
+  font-size: calc(15 * var(--px));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  word-break: keep-all;
+}
+
+.mk-col__name em {
+  margin-left: calc(8 * var(--px));
+  font-style: normal;
+  font-size: calc(10 * var(--px));
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #80807c;
+}
+
+.mk-col__meta {
+  font-size: calc(11 * var(--px));
+  color: #80807c;
+}
+
+.mk-col__eq {
+  overflow: hidden;
+  font-family: var(--f-formula);
+  font-size: calc(13 * var(--px));
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mk-col__item:hover {
+  background: #f2f2f0;
+}
+
+/* 지금 보고 있는 빵 */
+.mk-col__item.is-current {
+  background: var(--c-ink);
+  color: var(--c-white);
+  cursor: default;
+}
+
+.mk-col__item.is-current .mk-col__no,
+.mk-col__item.is-current .mk-col__meta,
+.mk-col__item.is-current .mk-col__name em {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 수식이 길어 넘칠 때는 휠로 스크롤 — 기본 스크롤바는 숨김 */
+.mk-res__formula {
+  scrollbar-width: none;
+}
+
+.mk-res__formula::-webkit-scrollbar {
+  display: none;
+}

@@ -5,6 +5,7 @@
    1) 문항: 한 화면에 한 문항씩, 가운데 패널에 표시
    2) 배경: 고른 답이 글자로 떨어져 바닥에 쌓임 (간단한 물리)
    3) 완성: 쌓인 글자가 바닥 아래로 우수수 떨어진 뒤 → 수식이 한 줄씩 완성
+   4) 레시피 모음: 만든 빵을 이 브라우저에 최신 15개까지 저장, 결과 화면 오른쪽에 목록
 
    선택지·수치: js/make-data.js (window.BBANG_MAKE)
    수식 생성:   js/make-engine.js (window.BbangMaker)
@@ -17,7 +18,10 @@ BR.pages.make = (() => {
   /* ---------- 모션 값 (여기서 조정) ---------- */
   const AUTO_NEXT = 520; // 하나만 고르는 문항: 고른 뒤 다음 문항으로 넘어가기까지(ms)
   const SWAP_OUT = 380; // 문항이 사라지는 시간(ms) — css/make.css .mk-q.is-out 과 맞춤
-  const DROP_TIME = 1500; // 완성 시 글자가 바닥 아래로 떨어지는 시간(ms)
+  const DROP_TIME = 2200; // 완성 시 글자가 떠올랐다 바닥 아래로 떨어지는 시간(ms) — 넉넉히
+  const FLOAT_LIFT = 520; // 완성 시 위로 튀어 오르는 속도 (클수록 높이 뜸)
+  const FLOAT_TIME = 0.45; // 떠 있는 시간(초) — 이 동안 중력이 약해짐
+  const FLOAT_GRAVITY = 0.3; // 떠 있는 동안 중력 배율
 
   const mkName = (sym) => D.names[sym] || sym;
   const range = (r, unit) => (r[0] === r[1] ? `${r[0]}${unit}` : `${r[0]}~${r[1]}${unit}`);
@@ -408,7 +412,8 @@ BR.pages.make = (() => {
       el.className = `mk-fall${math ? " mk-fall--math" : ""}`;
       el.textContent = text;
       // 글자 크기: 기호는 크게, 한글은 조금 작게 (피그마 px 기준)
-      const sizes = math ? [110, 130, 150, 170] : [64, 76, 90, 104];
+      // 글자 크기 (피그마 px) — 처음 크기에서 50% 키움
+      const sizes = math ? [165, 195, 225, 255] : [96, 114, 135, 156];
       const fs = sizes[Math.floor(Math.random() * sizes.length)];
       el.style.fontSize = `${fs * px}px`;
       pileEl.appendChild(el);
@@ -489,7 +494,11 @@ BR.pages.make = (() => {
         }
         awake++;
         const prevBottom = b.y + b.h / 2;
-        b.vy += g * dt;
+        // 완성 직후 잠깐은 중력을 약하게 → 공중으로 둥실 떠올랐다가 떨어짐
+        if (b.float > 0) {
+          b.vy += g * FLOAT_GRAVITY * dt;
+          b.float -= dt;
+        } else b.vy += g * dt;
         b.y += b.vy * dt;
         b.x += b.vx * dt;
         b.x = Math.min(Math.max(b.x, b.w / 2), W - b.w / 2);
@@ -567,8 +576,9 @@ BR.pages.make = (() => {
       const px = unit();
       bodies.forEach((b) => {
         b.sleep = false;
-        b.wait = Math.random() * 0.5; // 조금씩 다른 때에 떨어지기 시작
-        b.vy = -Math.random() * 220 * px; // 살짝 들썩였다가
+        b.wait = Math.random() * 0.25; // 조금씩 다른 때에 떠오르기 시작
+        b.vy = -(FLOAT_LIFT + Math.random() * 260) * px; // 공중으로 띄웠다가
+        b.float = FLOAT_TIME;
         b.vx = (Math.random() - 0.5) * 160 * px;
         b.vr = (Math.random() - 0.5) * 120;
       });
@@ -645,44 +655,122 @@ BR.pages.make = (() => {
 
   const unitText = (x) => (x.unit === "p" ? "개" : x.unit);
 
-  const showResult = () => {
-    if (root.classList.contains("is-result")) return;
+  /* ---------- 레시피 모음 (이 사이트에서 만들어진 빵) ----------
+     처음 기획 그대로: 이 브라우저에 최신 15개만 저장 (오래된 것부터 지움)
+     저장할 수 없는 환경(사생활 보호 모드 등)에서는 화면에만 남음 */
+  const COLLECTION_KEY = "breadmatics.collection";
+
+  const loadCollection = () => {
+    try {
+      return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || [];
+    } catch (e) {
+      return [];
+    }
+  };
+
+  const saveRecord = (rec) => {
+    const list = loadCollection().filter((x) => x.id !== rec.id);
+    list.push(rec);
+    while (list.length > D.collectionMax) list.shift();
+    try {
+      localStorage.setItem(COLLECTION_KEY, JSON.stringify(list));
+    } catch (e) {
+      /* 저장 불가 — 지금 화면에만 표시 */
+    }
+    return list;
+  };
+
+  // 지금 고른 답 → 저장할 레시피 한 건
+  const buildRecord = () => {
     const out = Mk.generate(S.c, S.rolls, D);
     const name = S.c.name.trim() || D.defaultName;
-    const type = find(D.types, S.c.type);
-    const formulaLines = [...out.formula.split("\n"), "", `= (${name})`];
+    return {
+      id: `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      type: find(D.types, S.c.type).ko,
+      rows: out.rows.map(({ sym, ko, amt, unit }) => ({ sym, ko, amt, unit })),
+      count: out.count,
+      per: out.per,
+      lines: [...out.formula.split("\n"), "", `= (${name})`],
+      createdAt: Date.now()
+    };
+  };
 
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const dateText = (t) => {
+    const d = new Date(t);
+    return `${pad2(d.getMonth() + 1)}.${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  };
+
+  let collection = [];
+  let latestId = null;
+
+  // 오른쪽: 만들어진 빵 목록 (최신이 위)
+  const collectionHTML = (shownId) => `
+    <aside class="mk-col">
+      <p class="mk-col__head"><span>이곳에서 만들어진 빵</span><span>${pad2(collection.length)} / ${D.collectionMax}</span></p>
+      <ol class="mk-col__list">${[...collection]
+        .reverse()
+        .map((r, k) => {
+          const no = collection.length - k;
+          const first = (r.lines.find((l) => l.trim().startsWith("→")) || "").trim();
+          return `<li><button type="button" class="mk-col__item${r.id === shownId ? " is-current" : ""}" data-id="${r.id}">
+              <span class="mk-col__no">${pad2(no)}</span>
+              <span class="mk-col__name">${BR.esc(r.name)}${r.id === latestId ? `<em>방금 만든 빵</em>` : ""}</span>
+              <span class="mk-col__meta">${BR.esc(r.type)} · ${dateText(r.createdAt)}</span>
+              <span class="mk-col__eq">${BR.esc(first)}</span>
+            </button></li>`;
+        })
+        .join("")}</ol>
+    </aside>`;
+
+  // 결과 화면 그리기: 왼쪽 정보 · 가운데 수식 · 오른쪽 레시피 모음
+  const renderRecord = (rec) => {
+    resultEl.classList.remove("is-drawn");
     resultEl.innerHTML = `
       <aside class="mk-res__side">
-        <p class="mk-res__kicker">My recipe · ${BR.esc(type.ko)}</p>
-        <h2 class="mk-res__name">${BR.esc(name)}</h2>
-        <ul class="mk-res__ings">${out.rows
+        <p class="mk-res__kicker">My recipe · ${BR.esc(rec.type)}</p>
+        <h2 class="mk-res__name">${BR.esc(rec.name)}</h2>
+        <ul class="mk-res__ings">${rec.rows
           .map((x) => `<li><span class="mk-res__sym">${BR.esc(x.sym)}</span><span>${BR.esc(x.ko)}</span><span class="mk-res__amt">${x.amt}${unitText(x)}</span></li>`)
           .join("")}</ul>
-        <p class="mk-res__meta">${out.count > 1 ? `${out.count}개 · 개당 ${out.per}g` : `한 덩어리 · ${out.per}g`}</p>
+        <p class="mk-res__meta">${rec.count > 1 ? `${rec.count}개 · 개당 ${rec.per}g` : `한 덩어리 · ${rec.per}g`}</p>
         <div class="mk-res__actions">
           <button type="button" class="mk-btn mk-res__again">다시 만들기</button>
           <a class="mk-btn" href="#/main">처음으로 ${BR.arrowSVG()}</a>
         </div>
       </aside>
-      <div class="mk-res__formula">${formulaLines
-        .map((l, i) => `<span class="mk-line${i === formulaLines.length - 1 ? " mk-line--end" : ""}" style="--i:${i}">${BR.esc(l)}</span>`)
-        .join("")}</div>`;
+      <div class="mk-res__formula">${rec.lines
+        .map((l, i) => `<span class="mk-line${i === rec.lines.length - 1 ? " mk-line--end" : ""}" style="--i:${i}">${BR.esc(l)}</span>`)
+        .join("")}</div>
+      ${collectionHTML(rec.id)}`;
 
-    root.classList.add("is-result");
     const formulaEl = resultEl.querySelector(".mk-res__formula");
     fitFormula(formulaEl);
     BR.smoothScroll(formulaEl, "y");
+    BR.smoothScroll(resultEl.querySelector(".mk-col__list"), "y");
     // 외곽선으로 먼저 나타난 뒤 → 한 줄씩 채워짐 (css/make.css)
     requestAnimationFrame(() => requestAnimationFrame(() => resultEl.classList.add("is-drawn")));
   };
 
-  // 수식 전체가 한 화면에 들어오도록 글자 크기 맞춤
+  const showResult = () => {
+    if (root.classList.contains("is-result")) return;
+    const rec = buildRecord();
+    latestId = rec.id;
+    collection = saveRecord(rec);
+    if (!collection.some((r) => r.id === rec.id)) collection = [...collection, rec];
+    root.classList.add("is-result");
+    renderRecord(rec);
+  };
+
+  // 수식 글자 크기: 크게 시작해서 한 화면에 들어오도록 줄이되, 너무 작아지지 않게 (넘치면 스크롤)
+  const FORMULA_MAX = 60;
+  const FORMULA_MIN = 34;
   const fitFormula = (el) => {
     const px = pxUnit();
-    let size = 52;
+    let size = FORMULA_MAX;
     el.style.fontSize = `${size * px}px`;
-    while (el.scrollHeight > el.clientHeight && size > 22) {
+    while (el.scrollHeight > el.clientHeight && size > FORMULA_MIN) {
       size -= 2;
       el.style.fontSize = `${size * px}px`;
     }
@@ -713,16 +801,22 @@ BR.pages.make = (() => {
     panel.addEventListener("input", onInput);
     window.addEventListener("keydown", onKey);
     resultEl.addEventListener("click", (e) => {
-      if (e.target.closest(".mk-res__again")) restart();
+      if (e.target.closest(".mk-res__again")) return restart();
+      // 레시피 모음에서 다른 빵을 누르면 그 빵의 수식을 다시 그림
+      const item = e.target.closest(".mk-col__item");
+      if (item && !item.classList.contains("is-current")) {
+        const rec = collection.find((r) => r.id === item.dataset.id);
+        if (rec) renderRecord(rec);
+      }
     });
     window.addEventListener("resize", () => BR.router.current() === "make" && pile.resize());
 
     renderQuestion(1);
   };
 
-  const enter = () => {
-    // 결과를 보고 나갔다가 다시 들어오면 새로 시작
-    if (S.done) restart();
+  const enter = (param, prev) => {
+    // 다른 페이지에서 들어오면 항상 1번 문항부터 새로 시작 (쌓인 글자도 비움)
+    if (prev) restart();
     pile.resize(); // 다른 페이지에 있는 동안 창 크기가 바뀌었으면 다시 쌓음
     pile.start();
   };

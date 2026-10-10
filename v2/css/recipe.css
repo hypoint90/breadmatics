@@ -96,9 +96,9 @@
 .r-stack {
   position: absolute;
   left: calc(597 * var(--px));
-  top: 0;
+  top: calc(25 * var(--px)); /* 2안: 페이지가 920 으로 길어져 카드 줄을 가운데로 (870 기준 좌표 유지) */
   width: calc(242 * var(--px));
-  height: 100%;
+  height: calc(870 * var(--px));
 }
 
 .r-card {
@@ -331,9 +331,9 @@
   gap: calc(30 * var(--px));
   width: calc(321 * var(--px));
   height: 100%;
-  padding: calc(30 * var(--px)) calc(60 * var(--px));
-  border-left: 0.5px solid var(--c-ink);
-  border-right: 0.5px solid var(--c-ink);
+  padding: calc(84 * var(--px)) calc(60 * var(--px)) calc(30 * var(--px)); /* 위: 메뉴 탭 아래 */
+  border-left: 0.5px solid var(--c-rule);
+  border-right: 0.5px solid var(--c-rule);
   overflow-y: auto;
 }
 
@@ -408,7 +408,7 @@
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  padding: calc(10 * var(--px)) calc(60 * var(--px)) calc(80 * var(--px));
+  padding: calc(64 * var(--px)) calc(60 * var(--px)) calc(80 * var(--px));
   font-family: var(--f-formula);
   font-size: calc(58 * var(--px));
   line-height: 1.3;

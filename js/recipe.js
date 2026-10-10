@@ -153,18 +153,25 @@ BR.pages.recipe = (() => {
     update(false);
   };
 
-  return { init, enter: () => update(false) };
+  // 들어올 때마다 첫 번째 빵부터. 단, 레시피 상세에서 뒤로 돌아온 경우엔 보던 빵 그대로
+  const enter = (param, prev) => {
+    if (prev !== "detail") BR.state.breadIndex = 0;
+    update(false);
+  };
+
+  return { init, enter };
 })();
 
 /* ---------------------------------------------------------
    2) 상세
    --------------------------------------------------------- */
 BR.pages.detail = (() => {
-  let side, formula;
+  let side, sideEl, formula;
 
   const init = () => {
     const root = document.querySelector(".detail");
     side = root.querySelector(".d-info");
+    sideEl = root.querySelector(".d-side");
     formula = root.querySelector(".d-formula");
     root.querySelector(".d-back").insertAdjacentHTML("afterbegin", BR.arrowSVG("arrow--left"));
 
@@ -192,6 +199,7 @@ BR.pages.detail = (() => {
 
     formula.innerHTML = b.formula.map((line, i) => `<span class="d-formula__line" style="--i:${i}">${BR.esc(line)}</span>`).join("");
     formula.scrollTop = 0;
+    sideEl.scrollTop = 0;
   };
 
   return { init, enter };
