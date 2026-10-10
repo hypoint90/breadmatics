@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Breadmatics Recipe 2안</title>
+    <meta name="description" content="빵을 방정식으로 기록하는 인터랙티브 레시피 북" />
+
+    <!-- 폰트 (하나가 실패해도 나머지는 로드되도록 따로 불러옴) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baskervville:ital,wght@0,400;0,500;1,400&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libertinus+Math&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <!-- 스타일 (2안 전용 — v2/css 만 고치면 1안에는 영향 없음) -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/nav.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/book.css" />
+    <link rel="stylesheet" href="css/ingredients.css" />
+    <link rel="stylesheet" href="css/manual.css" />
+    <link rel="stylesheet" href="css/recipe.css" />
+    <link rel="stylesheet" href="css/make.css" />
+  </head>
+
+  <body data-page="main">
+    <!-- =====================================================
+         메뉴 (2안) — 영수증 한 장
+         평소: 왼쪽 위 작은 탭(≡ MENU) / 마우스를 올리면 탭은 위로 올라가고
+         이어서 그 자리에 긴 영수증이 쭉 내려옴
+         .nav__item / data-nav 는 1안과 같은 이름이라 js/app.js 가 현재 페이지를 표시해 줌
+         ===================================================== -->
+    <nav class="menu" aria-label="주 메뉴">
+      <button class="menu__tab" type="button" aria-expanded="false" aria-controls="menu-receipt">
+        <span class="menu__icon" aria-hidden="true"><i></i><i></i></span>
+        <span class="menu__title">MENU</span>
+      </button>
+
+      <div class="menu__receipt" id="menu-receipt">
+        <div class="menu__paper">
+          <div class="menu__top">
+            <button class="menu__close" type="button" aria-label="메뉴 닫기"><span class="menu__icon"><i></i><i></i></span></button>
+            <p class="menu__brand"><span>BREAD<b>MATICS</b></span><em>Recipe</em></p>
+          </div>
+
+          <!-- 순서는 사이트 순서 그대로: Main → Manual book(재료 · 메뉴얼) → Bread Recipe → Make my recipe -->
+          <a class="nav__item menu__row menu__row--home" href="#/main" data-nav="main"><span class="menu__name">Main</span><span class="menu__radio"></span></a>
+
+          <p class="menu__label">Pages</p>
+          <ul class="menu__list">
+            <li>
+              <a class="nav__item menu__row" href="#/manual-book" data-nav="manual-book"><span class="menu__name">Manual book<i class="menu__more" aria-hidden="true"></i></span><span class="menu__radio"></span></a>
+              <!-- Manual book 의 하위 -->
+              <ul class="menu__sub">
+                <li><a class="nav__item menu__row menu__row--sub" href="#/ingredients" data-nav="ingredients"><span class="menu__name">재료</span><span class="menu__radio"></span></a></li>
+                <li><a class="nav__item menu__row menu__row--sub" href="#/manual" data-nav="manual"><span class="menu__name">메뉴얼</span><span class="menu__radio"></span></a></li>
+              </ul>
+            </li>
+            <li><a class="nav__item menu__row" href="#/recipe" data-nav="recipe"><span class="menu__name">Bread Recipe</span><span class="menu__radio"></span></a></li>
+            <li><a class="nav__item menu__row" href="#/make" data-nav="make"><span class="menu__name">Make my recipe</span><span class="menu__radio"></span></a></li>
+          </ul>
+
+          <!-- 맨 아래: 처음으로 (메인으로 돌아가기) -->
+          <a class="menu__home" href="#/main" data-arrow="after">처음으로 돌아가기</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- =====================================================
+         1. 메인
+         ===================================================== -->
+    <section class="page page--full main" data-page="main">
+      <div class="stage">
+        <!-- 1안 요소 (공용 js/main.js 가 찾으므로 남겨 두고 2안에서는 숨김) -->
+        <div class="mx-legacy" aria-hidden="true">
+          <div class="main__visual"></div>
+          <div class="main__glass"></div>
+          <span class="main__marquee-track"></span>
+          <ul class="main__menu"></ul>
+        </div>
+
+        <!-- =================================================
+             2안 메인 — 미니멀 (v2/css/main.css)
+             제목 두 줄(고딕 + 세리프 이탤릭) · 메뉴 세 줄 · 한 줄 소개
+             ================================================= -->
+        <div class="mx">
+          <h1 class="mx-title" data-reveal style="--i: 0">
+            <span>Breadmatics</span>
+            <em>Recipe</em>
+          </h1>
+
+          <nav class="mx-menu" aria-label="메인 메뉴" data-reveal style="--i: 1">
+            <a href="#/manual-book">Manual book</a>
+            <a href="#/recipe">Bread Recipe</a>
+            <a href="#/make">Make my recipe</a>
+          </nav>
+        </div>
+
+        <p class="mx-foot" data-reveal style="--i: 2">빵을 글·그림이 아닌 수(數)로 기록하는 레시피 북</p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         1-1. Manual book — 재료 / 메뉴얼 나누는 페이지
+         ===================================================== -->
+    <section class="page book" data-page="manual-book">
+      <a class="book__part" href="#/ingredients" data-reveal style="--i: 0">
+        <span class="book__no">01</span>
+        <span class="book__en">Ingredients</span>
+        <span class="book__kr">재료</span>
+        <span class="book__desc">빵정식에 쓰이는 재료 기호를<br />주기율표처럼 모아 두었어요.</span>
+        <span class="book__go" data-arrow="after">들어가기</span>
+      </a>
+      <a class="book__part" href="#/manual" data-reveal style="--i: 1">
+        <span class="book__no">02</span>
+        <span class="book__en">Manual</span>
+        <span class="book__kr">메뉴얼</span>
+        <span class="book__desc">혼합 · 발효 · 성형 · 굽기까지<br />공정을 수식으로 쓰는 문법이에요.</span>
+        <span class="book__go" data-arrow="after">들어가기</span>
+      </a>
+    </section>
+
+    <!-- =====================================================
+         2. 재료
+         ===================================================== -->
+    <section class="page ing" data-page="ingredients">
+      <div class="ing__columns"><!-- js/ingredients.js --></div>
+      <!-- 2안: 좌우 끝 살짝 흐림 — 화면 끝에 걸친 카드가 덜 보이게 -->
+      <div class="ing__edge ing__edge--l" aria-hidden="true"></div>
+      <div class="ing__edge ing__edge--r" aria-hidden="true"></div>
+
+      <div class="ing__scrollbar" aria-hidden="true">
+        <div class="ing__scrollbar-track"></div>
+        <div class="ing__scrollbar-thumb"></div>
+      </div>
+
+      <div class="ing__table"><!-- js/ingredients.js --></div>
+
+      <div class="ing__toggle">
+        <button class="pill" type="button"><span class="pill__label">한번에 보기</span></button>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         3. 메뉴얼
+         ===================================================== -->
+    <section class="page manual" data-page="manual">
+      <ol class="manual__list"><!-- js/manual.js --></ol>
+    </section>
+
+    <!-- =====================================================
+         4. Bread Recipe — 목록
+         ===================================================== -->
+    <section class="page recipe" data-page="recipe">
+      <div class="stage">
+        <div class="r-formula r-formula--left" aria-hidden="true"></div>
+        <div class="r-formula r-formula--right" aria-hidden="true"></div>
+        <!-- 단계형 블러: 세기가 다른 막 5장 (css/recipe.css) -->
+        <div class="r-blur r-blur--left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="r-blur r-blur--right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+        <div class="r-stack"><!-- js/recipe.js --></div>
+
+        <div class="r-names" aria-live="polite">
+          <div class="r-name r-name--en">
+            <p class="r-name__title"></p>
+            <p class="r-name__meta"></p>
+          </div>
+          <div class="r-name r-name--kr">
+            <p class="r-name__title"></p>
+            <p class="r-name__meta"></p>
+          </div>
+        </div>
+
+        <p class="r-counter"></p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         5. Bread Recipe — 상세
+         ===================================================== -->
+    <section class="page detail" data-page="detail">
+      <div class="stage">
+        <aside class="d-side">
+          <a class="d-back" href="#/recipe">뒤로 돌아가기</a>
+          <div class="d-info"><!-- js/recipe.js --></div>
+        </aside>
+        <div class="d-formula"><!-- js/recipe.js --></div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         6. Make my recipe — 나만의 빵 만들기
+         ===================================================== -->
+    <section class="page make" data-page="make">
+      <!-- 배경: 고른 답이 떨어져 쌓이는 글자 (js/make.js) -->
+      <div class="mk-pile" aria-hidden="true"></div>
+      <!-- 가운데 패널: 한 화면에 한 문항 -->
+      <div class="mk-panel">
+        <div class="mk-questions" aria-live="polite"></div>
+      </div>
+      <!-- 완성: 수식 -->
+      <div class="mk-result"></div>
+    </section>
+
+    <!-- 스크립트 (순서 중요: data → app → 각 페이지) -->
+    <script src="../js/data.js"></script>
+    <!-- 2안: 사진 경로를 한 단계 위(1안과 같은 assets 폴더)로 맞춤 -->
+    <script>
+      [BR.ingredients, BR.mainSlides, BR.breads].forEach((list) =>
+        list.forEach((x) => x.img && !x.img.startsWith("../") && (x.img = "../" + x.img))
+      );
+    </script>
+    <script src="../js/app.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/book.js"></script>
+    <script src="../js/ingredients.js"></script>
+    <script src="../js/manual.js"></script>
+    <script src="../js/recipe.js"></script>
+    <script src="../js/make-data.js"></script>
+    <script src="../js/make-engine.js"></script>
+    <script src="../js/make.js"></script>
+    <!-- 2안 전용 -->
+    <script src="js/menu.js"></script>
+    <script src="js/ingredients-focus.js"></script>
+  </body>
+</html>

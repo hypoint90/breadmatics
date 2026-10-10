@@ -40,7 +40,8 @@ BR.pages.manual = (() => {
   const renderTable = (t) => {
     const width = (t.cols || t.rows[0]).length;
     const cls = !t.cols ? "m-table--plain" : width === 3 ? "m-table--3" : "m-table--2";
-    const cells = [...(t.cols ? [t.cols] : []), ...t.rows].flat().map((c) => `<span>${BR.esc(c)}</span>`).join("");
+    const head = (t.cols || []).map((c) => `<span class="m-table__head">${BR.esc(c)}</span>`).join("");
+    const cells = head + t.rows.flat().map((c) => `<span>${BR.esc(c)}</span>`).join("");
     return `<div class="m-table ${cls}">${cells}</div>`;
   };
 
@@ -267,7 +268,19 @@ BR.pages.manual = (() => {
     });
   };
 
-  const enter = () => relayout();
+  // 들어올 때마다 처음 상태: 01 이 열린 채 맨 위, 읽음 표시 초기화
+  const enter = () => {
+    cancelAnimationFrame(raf);
+    raf = null;
+    anim = null;
+    active = 0;
+    push = 0;
+    target = y = 0;
+    waitPause = false;
+    setClasses(0);
+    items.forEach((li) => li.style.setProperty("--read", 0));
+    relayout();
+  };
 
   return { init, enter };
 })();

@@ -147,7 +147,7 @@ window.BBANG_MAKE = {
   "fillCap": 60,
 
   // 12 이름
-  "defaultName": "누군가의 무명의 빵",
+  "defaultName": "누군가의 무명빵",
   "nameMax": 12,
   "badWords": ["씨발", "시발", "ㅅㅂ", "병신", "ㅂㅅ", "개새", "좆", "지랄", "존나", "니미", "썅", "fuck", "shit", "bitch"],
   "collectionMax": 15

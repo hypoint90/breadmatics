@@ -1,0 +1,389 @@
+/* =========================================================
+   ingredients.css (2안) — 재료
+   보기 2가지
+   1) 자세히 보기(기본): 카드가 가로로 흐르고, 화면 가운데 카드가 커지며 이름이 보임
+      (가운데 판단은 v2/js/ingredients-focus.js)
+   2) 한번에 보기: 주기율표 — 처음엔 번호·기호만, 마우스를 올리면 한글·영문 이름
+   ========================================================= */
+
+.ing {
+  background: var(--c-white);
+  --ing-foot: 92; /* 아래 띠 높이 — 스크롤바와 버튼이 들어가는 자리 */
+  --ing-card-w: 220; /* 카드 폭 */
+  --ing-card-h: 300; /* 카드 높이 */
+  --ing-center: 1.3; /* 가운데 카드 확대 배율 */
+  --ing-box: #f3f2ef; /* 카드 바탕 (옅은 웜그레이) */
+}
+
+/* ---------- 1) 자세히 보기 — 가운데가 커지는 카드 줄 ---------- */
+.ing__columns {
+  position: absolute;
+  inset: 0 0 calc(var(--ing-foot) * var(--px)) 0;
+  display: flex;
+  align-items: center;
+  gap: calc(64 * var(--px));
+  /* 양 끝 여백 = 첫·마지막 카드도 화면 가운데까지 올 수 있게 */
+  padding: 0 calc(50% - var(--ing-card-w) / 2 * var(--px));
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* 기본 스크롤바 숨기고 커스텀 바 사용 */
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.ing__columns::-webkit-scrollbar {
+  display: none;
+}
+
+.ing-col {
+  --dur: 0.7s;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  flex: none;
+  width: calc(var(--ing-card-w) * var(--px));
+  height: calc(var(--ing-card-h) * var(--px));
+  background: var(--ing-box);
+  color: var(--c-ink);
+  text-align: center;
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform var(--dur) var(--ease), background-color 0.4s var(--ease-out);
+}
+
+/* 가운데 카드: 커지고 위로 */
+.ing-col.is-center {
+  z-index: 2;
+  transform: scale(var(--ing-center));
+}
+
+/* 다른 카드에 마우스: 바탕만 살짝 진하게 (누르면 가운데로 옴) */
+.ing-col:not(.is-center):hover {
+  background: #e9e8e4;
+}
+
+/* 1안의 검정 반전은 쓰지 않음 */
+.ing-col.is-active {
+  background: var(--ing-box);
+  color: var(--c-ink);
+}
+
+/* 배경 사진 (있는 재료만) — 가운데 카드에서만 옅게 */
+.ing-col__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.ing-col.is-center .ing-col__bg {
+  opacity: 0.22;
+}
+
+.ing-col__num {
+  position: absolute;
+  left: calc(16 * var(--px));
+  top: calc(14 * var(--px));
+  font-size: calc(18 * var(--px));
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  color: #8a8a86;
+}
+
+.ing-col__symbol {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-weight: 500;
+  font-size: calc(76 * var(--px));
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+}
+
+/* 이름 — 카드 아래, 가운데 카드만 보임 (레퍼런스의 상품명 자리) */
+.ing-col__names {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 22 * var(--px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(6 * var(--px));
+  width: calc(260 * var(--px));
+  translate: -50% 0;
+  opacity: 0;
+  transform: translateY(calc(8 * var(--px)));
+  transition: opacity 0.4s var(--ease-out), transform 0.6s var(--ease-out);
+  /* 카드가 1.3배 커지니 글자는 그만큼 작게 써서 실제 크기를 맞춤 */
+  font-size: calc(20 / 1.3 * var(--px));
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.ing-col.is-center .ing-col__names {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.15s;
+}
+
+.ing-col__kr {
+  order: -1; /* 한글 이름이 위, 영문이 아래 */
+  font-family: var(--f-kr);
+  font-weight: 700;
+}
+
+.ing-col__en {
+  font-size: 0.7em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a8a86;
+}
+
+.ing-col > :not(.ing-col__bg) {
+  z-index: 1;
+}
+
+/* ---------- 커스텀 스크롤바 ---------- */
+.ing__scrollbar {
+  position: absolute;
+  left: 50%;
+  bottom: calc((var(--ing-foot) - 22) * var(--px)); /* 아래 띠 위쪽 (버튼은 그 아래 가운데) */
+  width: calc(725 * var(--px));
+  height: calc(5 * var(--px));
+  transform: translateX(-50%);
+  z-index: 5;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* 얇은 바탕 선 — 거의 흰색에 가깝게 */
+.ing__scrollbar-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40%;
+  bottom: 40%;
+  background: #f4f4f3;
+  border: 0.3px solid rgba(28, 28, 28, 0.08);
+  border-radius: 10px;
+}
+
+.ing__scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 10%;
+  background: #141414;
+  border-radius: 1px;
+  box-shadow: 0 2px 4px rgba(49, 51, 56, 0.27);
+  cursor: grab;
+}
+
+/* ---------- 2) 한번에 보기 — 주기율표 ---------- */
+.ing__table {
+  position: absolute;
+  left: 50%;
+  top: calc(110 * var(--px)); /* 메뉴 탭 아래부터 */
+  width: calc(1393 * var(--px));
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: calc(8 * var(--px));
+  padding: calc(23 * var(--px)) calc(25 * var(--px));
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+}
+
+/* 카드: 처음엔 번호 + 기호만, 마우스를 올리면 기호가 위로 비켜나며 이름이 나타남 */
+.ing-card {
+  position: relative;
+  aspect-ratio: 117 / 150;
+  overflow: hidden;
+  border: 1px solid #e3e3e1;
+  background: var(--c-white);
+  color: var(--c-ink);
+  cursor: pointer;
+  transition: border-color 0.4s var(--ease-out), background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
+}
+
+.ing-card:hover {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: var(--c-white);
+}
+
+.ing-card__num {
+  position: absolute;
+  left: calc(9 * var(--px));
+  top: calc(8 * var(--px));
+  font-size: calc(15 * var(--px));
+  font-weight: 500;
+  line-height: 1;
+  color: #9a9a96;
+  transition: color 0.4s var(--ease-out);
+}
+
+.ing-card:hover .ing-card__num {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ing-card__symbol {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  font-weight: 500;
+  font-size: calc(46 * var(--px));
+  letter-spacing: -0.03em;
+  line-height: 1;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.ing-card:hover .ing-card__symbol {
+  transform: translateY(calc(-14 * var(--px)));
+}
+
+.ing-card__kr,
+.ing-card__en {
+  position: absolute;
+  left: calc(6 * var(--px));
+  right: calc(6 * var(--px));
+  opacity: 0;
+  transform: translateY(calc(6 * var(--px)));
+  transition: opacity 0.35s var(--ease-out), transform 0.5s var(--ease-out);
+  line-height: 1.1;
+}
+
+.ing-card__kr {
+  bottom: calc(30 * var(--px));
+  font-family: var(--f-kr);
+  font-weight: 600;
+  font-size: calc(13 * var(--px));
+}
+
+.ing-card__en {
+  bottom: calc(12 * var(--px));
+  font-size: calc(10 * var(--px));
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ing-card:hover .ing-card__kr,
+.ing-card:hover .ing-card__en {
+  opacity: 1;
+  transform: none;
+}
+
+.ing-card:hover .ing-card__en {
+  transition-delay: 0.05s;
+}
+
+/* ---------- 보기 전환 버튼 ---------- */
+/* 아래 띠 가운데, 스크롤바 바로 아래에 { 한번에 보기 } */
+.ing__toggle {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18 * var(--px));
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.ing__toggle .pill {
+  font-size: calc(16 * var(--px));
+}
+
+/* 꺾쇠 아이콘은 쓰지 않음 (괄호가 대신함) */
+.ing__toggle-icon {
+  display: none;
+}
+
+/* 표 보기 상태 */
+.ing.is-table .ing__columns,
+.ing.is-table .ing__scrollbar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ing.is-table .ing__table {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-base) var(--ease-out), visibility 0s;
+}
+
+/* 표 카드 순차 등장 */
+.ing.is-table .ing-card {
+  animation: card-in var(--dur-base) var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 12ms);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(12 * var(--px)));
+  }
+}
+
+/* ---------- 좌우 끝 흐림 ----------
+   화면 끝에 걸친 카드가 덜 보이도록, 바깥쪽으로 갈수록 흐려지고 흰색에 묻힘 */
+.ing__edge {
+  --edge-w: 200; /* 흐림 폭 */
+  position: absolute;
+  top: 0;
+  bottom: calc(var(--ing-foot) * var(--px));
+  width: calc(var(--edge-w) * var(--px));
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(var(--edge-dir), rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  -webkit-backdrop-filter: blur(calc(6 * var(--px)));
+  backdrop-filter: blur(calc(6 * var(--px)));
+  -webkit-mask-image: linear-gradient(var(--edge-dir), #000 20%, transparent);
+  mask-image: linear-gradient(var(--edge-dir), #000 20%, transparent);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.ing__edge--l {
+  --edge-dir: to right;
+  left: 0;
+}
+
+.ing__edge--r {
+  --edge-dir: to left;
+  right: 0;
+}
+
+/* 한번에 보기(표)에서는 숨김 */
+.ing.is-table .ing__edge {
+  opacity: 0;
+}
+
+/* 자세히 보기에서 가운데 카드를 눌러 넘어왔을 때 — 그 재료 칸을 잠깐 검정으로 강조 */
+.ing.is-table .ing-card.is-focus {
+  /* 등장(card-in)과 강조를 함께 */
+  animation: card-in var(--dur-base) var(--ease-out) backwards, card-focus 1.6s var(--ease-out);
+  animation-delay: calc(var(--i) * 12ms), 0s;
+}
+
+@keyframes card-focus {
+  0%,
+  45% {
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-white);
+  }
+}
+
+/* 가운데 카드는 누르면 표로 넘어간다는 표시 */
+.ing-col.is-center {
+  cursor: zoom-out;
+}

@@ -94,6 +94,12 @@ BR.pages.main = (() => {
       const menu = document.querySelector(".main__menu");
       menu.classList.remove("is-going");
       menu.querySelectorAll(".is-pressed").forEach((a) => a.classList.remove("is-pressed"));
+      // 흐르는 타이틀도 처음 위치부터 다시
+      const track = document.querySelector(".main__marquee-track");
+      track.style.animation = "none";
+      void track.offsetWidth;
+      track.style.animation = "";
+      paused = false;
       show(0);
       start();
     },

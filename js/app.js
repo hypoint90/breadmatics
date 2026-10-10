@@ -2,6 +2,7 @@
    app.js — 페이지 전환(라우터) · 상단 메뉴 · 공통 유틸
    주소 형식: #/main, #/ingredients, #/manual, #/recipe, #/recipe/croissant, #/make
    각 페이지 스크립트는 BR.pages.이름 = { init, enter, leave } 로 등록합니다.
+   다른 페이지에 갔다가 돌아오면 각 페이지는 enter 에서 처음 상태로 되돌아갑니다.
    ========================================================= */
 
 window.BR = window.BR || {};
@@ -92,7 +93,7 @@ BR.router = (() => {
   const pageEl = (name) => document.querySelector(`.page[data-page="${name}"]`);
 
   // 새 페이지: 아래에 내려둔 상태에서 시작 → 다음 프레임에 제자리로 올라옴
-  const show = (page, param) => {
+  const show = (page, param, prev) => {
     document.querySelectorAll(".page").forEach((el) => {
       el.classList.remove("is-leaving");
       el.classList.toggle("is-active", el.dataset.page === page);
@@ -101,7 +102,8 @@ BR.router = (() => {
     el.classList.add("is-entering");
     void el.offsetWidth; // 시작 위치를 먼저 그리게 함
     el.classList.remove("is-entering");
-    BR.pages[page].enter?.(param);
+    // enter(param, prev): prev = 직전 페이지 (처음 열 때는 null) — 페이지마다 처음 상태로 되돌릴지 판단에 씀
+    BR.pages[page].enter?.(param, prev);
   };
 
   const go = () => {
@@ -135,14 +137,14 @@ BR.router = (() => {
     const out = prev && prev !== page ? pageEl(prev) : null;
     if (out && out.classList.contains("is-active")) {
       out.classList.add("is-leaving");
-      pending = () => show(page, param);
+      pending = () => show(page, param, prev);
       swapTimer = setTimeout(() => {
         const run = pending;
         pending = null;
         run?.();
       }, LEAVE);
     } else {
-      show(page, param);
+      show(page, param, prev);
     }
   };
 

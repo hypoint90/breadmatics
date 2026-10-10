@@ -1,0 +1,439 @@
+/* =========================================================
+   recipe.css — Bread Recipe
+   1) 목록(세로 캐러셀)  피그마: 레시피 (팽오쇼콜라 / 스콘)
+   2) 상세               피그마: 레시피 (크루아상 상세)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1) 목록
+   --------------------------------------------------------- */
+.recipe .stage {
+  overflow: hidden;
+}
+
+/* 양옆 흐르는 수식 */
+.r-formula {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(483 * var(--px));
+  overflow: hidden;
+  padding: 0 calc(10 * var(--px));
+  font-family: var(--f-formula);
+  font-size: calc(52 * var(--px));
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  color: var(--c-black);
+}
+
+.r-formula--left {
+  left: 0;
+}
+
+.r-formula--right {
+  right: 0;
+  text-align: right;
+}
+
+.r-formula__track {
+  white-space: pre-wrap;
+  animation: formula-drift 60s linear infinite;
+}
+
+.r-formula--right .r-formula__track {
+  animation-direction: reverse;
+}
+
+/* 같은 수식을 2번 넣어두고 절반만큼 올려서 끊김 없이 반복 */
+@keyframes formula-drift {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+/* 수식 흐림 — 가운데(빵 쪽)로 갈수록 흐려짐
+   단계형 블러(progressive blur): 블러 세기가 다른 막 5장을 구간별로 겹쳐서
+   '선명 → 조금 흐림 → 많이 흐림'이 자연스럽게 이어지게 함
+   (막 1장 + 그라데이션 마스크로 하면 선명한 글자와 흐린 글자가 겹쳐 보임)
+   --blur-max: 가장 흐린 쪽 세기 / 각 막의 구간(%)은 아래 nth-child 에서 조정 */
+.r-blur {
+  --blur-max: 8;
+  --dir: to right;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.r-blur--left {
+  left: 0;
+  width: calc(597 * var(--px));
+}
+
+.r-blur--right {
+  --dir: to left;
+  right: 0;
+  width: calc(601 * var(--px));
+}
+
+.r-blur i {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(calc(var(--b) * var(--px)));
+  backdrop-filter: blur(calc(var(--b) * var(--px)));
+  -webkit-mask-image: linear-gradient(var(--dir), transparent var(--from), #000 var(--to));
+  mask-image: linear-gradient(var(--dir), transparent var(--from), #000 var(--to));
+}
+
+/* 막마다 세기(--b)와 시작~끝 구간 — 뒤로 갈수록 더 세고, 더 안쪽(빵 쪽)에서 시작 */
+.r-blur i:nth-child(1) { --b: calc(var(--blur-max) / 16); --from: 30%; --to: 45%; }
+.r-blur i:nth-child(2) { --b: calc(var(--blur-max) / 8);  --from: 40%; --to: 55%; }
+.r-blur i:nth-child(3) { --b: calc(var(--blur-max) / 4);  --from: 50%; --to: 65%; }
+.r-blur i:nth-child(4) { --b: calc(var(--blur-max) / 2);  --from: 60%; --to: 75%; }
+.r-blur i:nth-child(5) { --b: var(--blur-max);            --from: 70%; --to: 88%; }
+
+/* 가운데 빵 이미지 스택 */
+.r-stack {
+  position: absolute;
+  left: calc(597 * var(--px));
+  top: calc(25 * var(--px)); /* 2안: 페이지가 920 으로 길어져 카드 줄을 가운데로 (870 기준 좌표 유지) */
+  width: calc(242 * var(--px));
+  height: calc(870 * var(--px));
+}
+
+.r-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(176 * var(--px));
+  height: calc(234 * var(--px));
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  transition: top var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out),
+    height var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out);
+}
+
+.r-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 흰 막 (앞뒤 빵을 흐릿하게) */
+.r-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+/* 슬롯 위치 — 피그마 좌표 기준 (페이지 높이 870 중 위치) */
+.r-card[data-slot="-2"] {
+  top: calc((62 + 86.5) * var(--px));
+  width: calc(130 * var(--px));
+  height: calc(173 * var(--px));
+  z-index: 1;
+}
+
+.r-card[data-slot="-1"] {
+  top: calc((147 + 117) * var(--px));
+  z-index: 2;
+}
+
+.r-card[data-slot="0"] {
+  top: calc(50% - 6 * var(--px));
+  width: calc(242 * var(--px));
+  height: calc(322 * var(--px));
+  z-index: 3;
+  box-shadow: 0 0 calc(6.5 * var(--px)) calc(3 * var(--px)) rgba(25, 26, 27, 0.15);
+  cursor: zoom-in;
+}
+
+.r-card[data-slot="1"] {
+  top: calc((477 + 117) * var(--px));
+  z-index: 2;
+}
+
+.r-card[data-slot="2"] {
+  top: calc((634 + 86.5) * var(--px));
+  width: calc(130 * var(--px));
+  height: calc(173 * var(--px));
+  z-index: 1;
+}
+
+/* 뒤쪽 카드 흰 막(딤드) 진하기 — 바로 옆 / 가장 바깥 (피그마 30% / 60% 에서 +20%) */
+.r-card[data-slot="-1"]::after,
+.r-card[data-slot="1"]::after {
+  opacity: 0.5;
+}
+
+.r-card[data-slot="-2"]::after,
+.r-card[data-slot="2"]::after {
+  opacity: 0.8;
+}
+
+/* 화면 밖 대기 슬롯 */
+.r-card[data-slot="hide-up"],
+.r-card[data-slot="hide-down"] {
+  width: calc(100 * var(--px));
+  height: calc(133 * var(--px));
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.r-card[data-slot="hide-up"] {
+  top: calc(-80 * var(--px));
+}
+
+.r-card[data-slot="hide-down"] {
+  top: calc(100% + 80 * var(--px));
+}
+
+.r-card[data-slot="0"]:hover img {
+  transform: scale(1.04);
+}
+
+.r-card img {
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* 가운데 카드에 마우스를 올리면 아래에서 '레시피 보러가기' 띠가 올라옴 */
+.r-card__go {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1; /* 흰 막(::after) 위 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--px));
+  height: calc(40 * var(--px));
+  /* 아주 옅은 흰 막 + 뒤 사진 흐림 (유리 느낌) */
+  background: rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(calc(12 * var(--px)));
+  backdrop-filter: blur(calc(12 * var(--px)));
+  border-top: 0.5px solid rgba(255, 255, 255, 0.25);
+  color: var(--c-ink);
+  font-family: var(--f-kr);
+  font-weight: 500;
+  font-size: calc(14 * var(--px));
+  letter-spacing: -0.03em;
+  transform: translateY(101%);
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* 사진 아래쪽이 어두운 카드는 글자를 흰색으로 (js/recipe.js 에서 밝기를 재서 is-dark 붙임) */
+.r-card.is-dark .r-card__go {
+  color: var(--c-white);
+}
+
+.r-card__go .arrow {
+  width: calc(16 * var(--px));
+  transition: transform 0.5s var(--ease-out);
+}
+
+.r-card[data-slot="0"]:hover .r-card__go,
+.r-card[data-slot="0"]:focus-visible .r-card__go {
+  transform: none;
+}
+
+.r-card[data-slot="0"]:hover .r-card__go .arrow {
+  transform: translateX(calc(3 * var(--px)));
+}
+
+/* 빵 이름 (좌: 영문 / 우: 한글) */
+.r-names {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(799 * var(--px));
+  height: calc(135 * var(--px));
+  display: flex;
+  justify-content: space-between;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.r-name {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5 * var(--px));
+  width: calc(250 * var(--px));
+}
+
+.r-name--en {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.r-name__title {
+  font-size: calc(32 * var(--px));
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.r-name--kr .r-name__title {
+  font-family: var(--f-kr);
+}
+
+.r-name__meta {
+  font-family: var(--f-kr);
+  font-weight: 500;
+  font-size: calc(12 * var(--px));
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--c-ink);
+  white-space: pre-line;
+}
+
+/* 이름 전환 모션 */
+.r-name > * {
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+
+.r-names.is-changing .r-name > * {
+  opacity: 0;
+  transform: translateY(calc(10 * var(--px)));
+}
+
+/* 진행 표시 (01 / 10) */
+.r-counter {
+  position: absolute;
+  right: calc(24 * var(--px));
+  bottom: calc(20 * var(--px));
+  font-family: var(--f-serif);
+  font-size: calc(13 * var(--px));
+  z-index: 5;
+}
+
+/* ---------------------------------------------------------
+   2) 상세
+   --------------------------------------------------------- */
+.detail .stage {
+  display: flex;
+}
+
+.d-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(30 * var(--px));
+  width: calc(321 * var(--px));
+  height: 100%;
+  padding: calc(84 * var(--px)) calc(60 * var(--px)) calc(30 * var(--px)); /* 위: 메뉴 탭 아래 */
+  border-left: 0.5px solid var(--c-rule);
+  border-right: 0.5px solid var(--c-rule);
+  overflow-y: auto;
+}
+
+/* 뒤로 돌아가기 버튼 (피그마: Component 10) */
+.d-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(6 * var(--px));
+  width: calc(200 * var(--px));
+  height: calc(35 * var(--px));
+  padding-right: calc(10 * var(--px));
+  border: 1px solid var(--c-ink);
+  background: var(--c-white);
+  font-size: calc(18 * var(--px));
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--c-ink);
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.d-back:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+.d-info {
+  display: flex;
+  flex-direction: column;
+  gap: calc(10 * var(--px));
+  width: calc(200 * var(--px));
+}
+
+.d-info__names {
+  display: flex;
+  flex-direction: column;
+  gap: calc(3 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(14 * var(--px));
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.d-info__kr {
+  font-weight: 700;
+}
+
+.d-info__en {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.d-info__img {
+  width: 100%;
+  aspect-ratio: 1856 / 2464;
+  object-fit: cover;
+}
+
+.d-info__meta {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--px));
+  font-family: var(--f-kr);
+  font-weight: 500;
+  font-size: calc(12 * var(--px));
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--c-ink);
+}
+
+.d-formula {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: calc(64 * var(--px)) calc(60 * var(--px)) calc(80 * var(--px));
+  font-family: var(--f-formula);
+  font-size: calc(58 * var(--px));
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  white-space: pre-wrap;
+}
+
+/* 수식 줄 단위 등장 */
+.d-formula__line {
+  display: block;
+}
+
+/* 노션 수식의 빈 줄 = 단계 사이 간격 */
+.d-formula__line:empty {
+  height: 0.45em;
+}
+
+.detail.is-active .d-formula__line {
+  animation: line-in var(--dur-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 60ms + 0.15s);
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(24 * var(--px)));
+  }
+}
