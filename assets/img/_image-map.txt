@@ -1,0 +1,83 @@
+# 변환된 파일 <- 원본 파일
+halftone/halftone-01.webp <- helftoon_img/halftone-1790867355669.png
+halftone/halftone-02.webp <- helftoon_img/halftone-1790867380627.png
+halftone/halftone-03.webp <- helftoon_img/halftone-1790867418877.png
+halftone/halftone-04.webp <- helftoon_img/halftone-1790867464392.png
+halftone/halftone-05.webp <- helftoon_img/halftone-1790867489462.png
+halftone/halftone-06.webp <- helftoon_img/halftone-1790867530120.png
+halftone/halftone-07.webp <- helftoon_img/halftone-1790867576641.png
+halftone/halftone-08.webp <- helftoon_img/halftone-1790867670441.png
+halftone/halftone-09.webp <- helftoon_img/halftone-1790867688035.png
+halftone/halftone-10.webp <- helftoon_img/halftone-1790867719667.png
+halftone/halftone-11.webp <- helftoon_img/halftone-1790867755385.png
+halftone/halftone-12.webp <- helftoon_img/halftone-1790867801823.png
+halftone/halftone-13.webp <- helftoon_img/halftone-1790867872384.png
+halftone/halftone-14.webp <- helftoon_img/halftone-1790867918443.png
+halftone/halftone-15.webp <- helftoon_img/halftone-1790867947004.png
+halftone/halftone-16.webp <- helftoon_img/halftone-1790867993143.png
+bread/custard-cream-bun-01.webp <- Custard Cream Bun_01_img.png
+bread/custard-cream-bun-02.webp <- Custard Cream Bun_02_img.png
+bread/doughnut-01.webp <- Doughnut_01_img.png
+bread/kkwabaegi-01.webp <- Kkwabaegi_01_img.png
+bread/melon-pan-01.webp <- Melon Pan_01_img.png
+bread/pizza-bread-01.webp <- Pizza Bread_01_img.png
+bread/sausage-bread-01.webp <- Sausage Bread_01_img.png
+bread/sausage-bread-02.webp <- Sausage Bread_02_img.png
+bread/soboro-bread-01.webp <- Soboro Bread_01_img.png
+photo/cream-bun-01.webp <- u7316156269_Professional_advertising_product_photography_of_K_4155afb7-6a66-47dd-ba49-f868bdc2c0c8_0.png
+photo/cream-bun-02.webp <- u7316156269_Professional_advertising_product_photography_of_K_d54cbca8-7330-4025-89f3-1f3a34449076_3.png
+photo/hotdog-01.webp <- u7316156269_Professional_advertising_product_photography_of_a_810ae220-d50e-47bf-b247-d700f0d11b1c_2.png
+photo/donut-01.webp <- u7316156269_Professional_advertising_product_photography_of_a_a2bbeb01-525d-43be-803d-0cd39af7c45e_2.png
+photo/donut-02.webp <- u7316156269_Professional_advertising_product_photography_of_a_c6ed390b-8fe9-4a1f-9b0e-946515083e64_3.png
+photo/macro-01.webp <- u7316156269_Studio_concept_food_photography_extreme_close_up_ma_71808b6c-7b46-4d5d-a7eb-08e219cd61ff.png
+photo/stacked-bread-01.webp <- u7316156269_Studio_still_life_macro_food_photography._A_stack_o_4d070d6c-6a7a-480c-be69-6b7395d8912c.png
+photo/stacked-bread-02.webp <- u7316156269_Studio_still_life_macro_food_photography._A_stack_o_f4f76d5d-a903-4859-9e7d-d18735d1df0b.png
+photo/stacked-buns-01.webp <- u7316156269________--ar_5877_--edit_httpss.mj.runpSBzX4DpHpQ_--_8b8a0e53-28f9-4305-b010-979babc6384e.png
+photo/soft-closeup-01.webp <- u7316156269_soft_extreme_close-up_studio_food_photograph_of_a_s_37463841-bc3b-4ae0-94e1-c21844b1677e.png
+photo/soft-closeup-02.webp <- u7316156269_soft_extreme_close-up_studio_food_photograph_of_a_s_70795b9b-4b82-4045-ad8b-2693fb0504f5.png
+photo/soft-closeup-03.webp <- u7316156269_soft_extreme_close-up_studio_food_photograph_of_a_s_b381c9f3-a176-4d5d-a876-deba6fa3514c.png
+photo/croissant-butter-01.webp <- u7316156269_studio_concept_food_photography_a_butter_croissant__1250d1a8-7e82-45cb-ac91-6759a4a4e418.png
+photo/melon-pan-01.webp <- u7316156269_studio_concept_food_photography_a_single_Japanese_m_78709262-c371-4a75-abd4-209e7377888d.png
+photo/croquette-01.webp <- u7316156269_studio_concept_food_photography_a_single_Korean_bak_1efd2d32-3d9b-46c2-814b-32fe07663398.png
+photo/cinnamon-roll-01.webp <- u7316156269_studio_concept_food_photography_a_single_cinnamon_r_b7122119-4ac4-4447-b21f-8b976444154b.png
+photo/twisted-donut-01.webp <- u7316156269_studio_concept_food_photography_a_single_long_Korea_fd042bb9-a47d-42fe-847f-f82aac2d7b0f.png
+photo/panettone-01.webp <- u7316156269_studio_concept_food_photography_a_single_tall_panet_2201fb54-f7af-4508-97c5-6d31b738258e.png
+photo/round-bread-01.webp <- u7316156269_studio_concept_food_photography_a_single_whole_roun_3464bb6c-cb8d-49d1-971e-55050ba2d072.png
+photo/corn-bread-01.webp <- u7316156269_studio_concept_food_photography_a_witty_visual_pun__ae59531c-5c42-4550-a39e-9454f9347053.png
+photo/corn-bread-02.webp <- u7316156269_studio_concept_food_photography_a_witty_visual_pun__d170fafd-7f70-4321-a284-e0bd6eb3dc75.png
+photo/scone-02.webp <- u7316156269_studio_concept_food_photography_close-up_of_a_singl_22b80b20-5b7a-4263-be24-8a81f106a396.png
+photo/salt-bread-01.webp <- u7316156269_studio_concept_food_photography_extreme_close-up__2c579399-5a76-4d20-b67a-8e8702fa857e_0.png
+photo/cheese-pull-01.webp <- u7316156269_studio_concept_food_photography_extreme_close-up__90950bc2-df3d-4af3-ad39-85b4f87cacb3_2.png
+photo/roll-01.webp <- u7316156269_studio_concept_food_photography_extreme_close-up__fff211f5-47dc-4ed6-92bb-17735255e11d_1.png
+photo/macro-02.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_1d96f3ba-e441-4700-a1a5-16d168ea68ca.png
+photo/macro-03.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_452177ef-68f8-4355-9c17-5f400f901ef9.png
+photo/macro-04.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_6edac4d9-954e-456f-a35c-78380317ec55.png
+photo/macro-05.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_82456a03-57d3-4370-99f0-cecdf33c5da8.png
+photo/crust-01.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_8bed4c53-822a-4af6-b8b1-15b556a6cce5.png
+photo/macro-07.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_aeade03a-f98a-4a15-8c45-3e837e858b54.png
+photo/macro-08.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_e2b3d00e-5567-49bf-b294-5d45e7103b2b.png
+photo/macro-09.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_ed4d77e0-502d-4b66-a033-ee05c219450d.png
+photo/macro-10.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_ma_fcded8fc-21d2-4005-aa1a-9453ea0a5217.png
+photo/closeup-05.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_of_7bd02f0f-5243-4914-9fbf-7aad2f487dff.png
+photo/closeup-06.webp <- u7316156269_studio_concept_food_photography_extreme_close-up_of_9a377fb1-0ebe-4d1e-a7c8-857af24a6ceb.png
+photo/simit-01.webp <- u7316156269_studio_concept_food_photography_five_Turkish_simit__c0c700d2-2819-459d-ae49-ebc215d79f4e.png
+photo/pain-au-chocolat-01.webp <- u7316156269_studio_concept_food_photography_five_pains_au_choco_63075a6f-6778-4230-9e00-c50dcf422501.png
+photo/pain-au-chocolat-02.webp <- u7316156269_studio_concept_food_photography_five_pains_au_choco_791f0874-b8d8-4acd-97a2-61e9e355530e.png
+photo/round-slices-01.webp <- u7316156269_studio_concept_food_photography_five_thick_round_sl_3a39d488-0280-4912-8093-7261bfe47479.png
+photo/real-closeup-01.webp <- u7316156269_studio_concept_food_photography_real_photograph_ext_446d497a-9094-4310-8fc2-958c1328f4b1.png
+photo/real-closeup-02.webp <- u7316156269_studio_concept_food_photography_real_photograph_ext_44deca9f-5031-45ba-bec6-546664759c7b.png
+photo/dark-croissant-01.webp <- u7316156269_studio_concept_food_photography_real_photograph_ext_cf5ee981-a015-4481-a089-437c4b38f105.png
+photo/croissant-01.webp <- u7316156269_studio_concept_food_photography_three_butter_croiss_6813db5d-e576-4086-a508-5041ac709bb1.png
+photo/scone-01.webp <- u7316156269_studio_concept_food_photography_three_triangular_sc_221cf4c2-6e6a-4380-98f6-ccf4710ddc62.png
+photo/pretzel-01.webp <- u7316156269_studio_concept_food_photography_two_soft_pretzels_i_188aac27-33fa-4ebf-b5fa-81779d879ad3.png
+photo/pretzel-02.webp <- u7316156269_studio_concept_food_photography_two_soft_pretzels_i_9fc5507d-13a2-4a61-9c33-a86242a6fa3f.png
+ingredient/salt.webp <- Figma 에셋(재료 S 배경)
+ingredient/yeast.webp <- Figma 에셋(재료 Y 배경)
+main/corn.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/croissant-butter.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/croissant.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/crusty-loaf.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/dark-loaf.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/fork-bun.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/pretzel.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)
+main/round-bun.webp <- Figma 메인 시안 원본 이미지(누끼, 잘리지 않은 전체)

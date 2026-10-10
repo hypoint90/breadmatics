@@ -1,0 +1,596 @@
+/* =========================================================
+   make.css — Make my recipe (나만의 빵 만들기)
+   피그마: 나만의 빵 만들기 (node 2265-1591)
+   가운데 패널(754 × 870) 안에 문항 · 뒤에는 떨어져 쌓이는 글자
+   ========================================================= */
+
+.make {
+  background: var(--c-white);
+}
+
+/* ---------- 배경: 떨어지는 글자 ---------- */
+.mk-pile {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mk-fall {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--f-kr);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--c-ink);
+  will-change: transform;
+  transition: opacity 0.35s var(--ease-out);
+}
+
+/* 재료 기호·숫자는 레시피 수식과 같은 글꼴 */
+.mk-fall--math {
+  font-family: var(--f-formula);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+/* 선택을 취소하면 흐려지며 사라짐 */
+.mk-fall.is-gone {
+  opacity: 0;
+}
+
+/* ---------- 가운데 패널 ---------- */
+/* 뒤 글자가 비쳐 보이도록 반투명 + 흐림 (레시피 화면 수식 흐림과 같은 결) */
+.mk-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(754 * var(--px));
+  transform: translateX(-50%);
+  border-left: 0.5px solid var(--c-ink);
+  border-right: 0.5px solid var(--c-ink);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(calc(14 * var(--px)));
+  backdrop-filter: blur(calc(14 * var(--px)));
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.mk-questions {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- 문항 1개 ---------- */
+.mk-q {
+  position: absolute;
+  inset: 0;
+  --rise: calc(40 * var(--px) * var(--dir, 1));
+}
+
+/* 문항 안 요소들이 차례로 올라옴 (--d: 순서) */
+.mk-q__head,
+.mk-q__body,
+.mk-q__next {
+  transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 70ms);
+}
+
+.mk-q__head { --d: 0; }
+.mk-q__body { --d: 1; }
+.mk-q__next { --d: 2; }
+
+.mk-q.is-in .mk-q__head,
+.mk-q.is-in .mk-q__body,
+.mk-q.is-in .mk-q__next {
+  opacity: 0;
+  transform: translateY(var(--rise));
+  transition: none;
+}
+
+/* 나가는 문항: 반대쪽으로 빠르게 사라짐 */
+.mk-q.is-out {
+  pointer-events: none;
+}
+
+.mk-q.is-out .mk-q__head,
+.mk-q.is-out .mk-q__body,
+.mk-q.is-out .mk-q__next,
+.mk-q.is-out .mk-q__count,
+.mk-q.is-out .mk-q__prev {
+  opacity: 0;
+  transform: translateY(calc(var(--rise) * -0.6));
+  transition: opacity 0.3s var(--ease-out), transform 0.38s var(--ease-out);
+  transition-delay: 0s;
+}
+
+.mk-q__count,
+.mk-q__prev {
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* 진행 표시 (3 / 8) — 피그마: 오른쪽 위 */
+.mk-q__count {
+  position: absolute;
+  right: calc(24 * var(--px));
+  top: calc(24 * var(--px));
+  font-size: calc(24 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+/* 이전 — 왼쪽 위 (진행 표시와 마주 보게) */
+.mk-q__prev {
+  position: absolute;
+  left: calc(24 * var(--px));
+  top: calc(20 * var(--px));
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(16 * var(--px));
+  letter-spacing: -0.02em;
+  color: #80807c;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.mk-q__prev[hidden] {
+  display: none;
+}
+
+.mk-q__prev:hover {
+  color: var(--c-ink);
+}
+
+/* 문항 제목 — 피그마: 50px Bold, 가운데 (중심 y 274.5) */
+.mk-q__head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(274.5 * var(--px));
+  translate: 0 -50%;
+  text-align: center;
+}
+
+.mk-q__title {
+  font-family: var(--f-kr);
+  font-weight: 700;
+  font-size: calc(50 * var(--px));
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.mk-q__lede {
+  margin-top: calc(18 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(16 * var(--px));
+  letter-spacing: -0.02em;
+  color: #80807c;
+}
+
+/* 선택지 영역 — 피그마: 위에서 507 */
+.mk-q__body {
+  position: absolute;
+  left: calc(46 * var(--px));
+  right: calc(46 * var(--px));
+  top: calc(507 * var(--px));
+}
+
+/* 선택지가 많은 문항은 조금 위에서 시작 */
+.mk-q--multi .mk-q__head {
+  top: calc(165 * var(--px));
+}
+
+.mk-q--multi .mk-q__body {
+  top: calc(280 * var(--px));
+}
+
+.mk-q--multi .mk-subrow {
+  padding: calc(10 * var(--px)) 0;
+}
+
+.mk-q__opts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(20 * var(--px)) calc(39 * var(--px));
+  max-width: calc(var(--cols) * 194 * var(--px) + (var(--cols) - 1) * 39 * var(--px));
+  margin: 0 auto;
+}
+
+/* 하나 고르는 선택지 — 피그마 194 × 71 */
+.mk-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(6 * var(--px));
+  width: calc(194 * var(--px));
+  min-height: calc(71 * var(--px));
+  padding: calc(10 * var(--px));
+  border: 0.5px solid var(--c-ink);
+  background: var(--c-white);
+  color: var(--c-ink);
+  transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out);
+}
+
+.mk-opt__label {
+  font-family: var(--f-kr);
+  font-weight: 600;
+  font-size: calc(20 * var(--px));
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.mk-opt__desc {
+  font-family: var(--f-kr);
+  font-size: calc(12 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #80807c;
+  transition: color 0.35s var(--ease-out);
+}
+
+/* 재료 기호 선택지: 기호를 크게 */
+.mk-opt--sym {
+  min-height: calc(110 * var(--px));
+}
+
+.mk-opt__sym {
+  font-family: var(--f-formula);
+  font-size: calc(40 * var(--px));
+  line-height: 1;
+}
+
+.mk-opt--sym .mk-opt__label {
+  font-size: calc(15 * var(--px));
+  font-weight: 500;
+}
+
+/* 마우스 오버·선택: 검정 바탕 (뒤로 돌아가기 버튼과 같은 반응) */
+.mk-opt:hover,
+.mk-opt.is-on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+.mk-opt:hover .mk-opt__desc,
+.mk-opt.is-on .mk-opt__desc {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- 부재료 (종류별 줄) ---------- */
+.mk-q__subs {
+  display: flex;
+  flex-direction: column;
+  border-top: 0.5px solid var(--c-ink);
+}
+
+.mk-subrow {
+  display: flex;
+  align-items: center;
+  gap: calc(20 * var(--px));
+  padding: calc(14 * var(--px)) 0;
+  border-bottom: 0.5px solid var(--c-ink);
+  transition: opacity 0.35s var(--ease-out);
+}
+
+.mk-subrow.is-locked {
+  opacity: 0.35;
+}
+
+.mk-subrow__name {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--px));
+  width: calc(90 * var(--px));
+  font-family: var(--f-kr);
+  font-weight: 600;
+  font-size: calc(16 * var(--px));
+  letter-spacing: -0.03em;
+}
+
+.mk-subrow__name span {
+  font-weight: 400;
+  font-size: calc(12 * var(--px));
+  color: #80807c;
+}
+
+/* 칩 4개가 한 줄을 나눠 씀 — 이름이 길어도(화이트초콜릿) 줄바꿈 없이 한 줄 */
+.mk-subrow__chips {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(8 * var(--px));
+}
+
+.mk-chip {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: calc(6 * var(--px));
+  min-width: 0;
+  padding: calc(10 * var(--px)) calc(6 * var(--px));
+  border: 0.5px solid var(--c-ink);
+  background: var(--c-white);
+  white-space: nowrap;
+  transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out);
+}
+
+.mk-chip__sym {
+  font-family: var(--f-formula);
+  font-size: calc(22 * var(--px));
+  line-height: 1;
+}
+
+.mk-chip__label {
+  font-family: var(--f-kr);
+  font-size: calc(12 * var(--px));
+  letter-spacing: -0.04em;
+}
+
+/* '선택하지 않음' — 부재료 줄들 위 */
+.mk-q__subnone {
+  display: flex;
+  justify-content: center;
+  margin-bottom: calc(18 * var(--px));
+}
+
+.mk-q__subnone .mk-opt {
+  min-height: calc(48 * var(--px));
+}
+
+/* '선택하지 않음' 선택지: 다른 선택지보다 한 단계 옅게 */
+.mk-opt--none .mk-opt__label {
+  font-weight: 500;
+  font-size: calc(16 * var(--px));
+  color: #80807c;
+  transition: color 0.35s var(--ease-out);
+}
+
+.mk-opt--none:hover .mk-opt__label,
+.mk-opt--none.is-on .mk-opt__label {
+  color: var(--c-white);
+}
+
+.mk-chip:hover:not(:disabled),
+.mk-chip.is-on {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+.mk-chip:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* ---------- 이름 입력 ---------- */
+.mk-name {
+  display: flex;
+  align-items: baseline;
+  gap: calc(16 * var(--px));
+  width: calc(480 * var(--px));
+  margin: 0 auto;
+  border-bottom: 1px solid var(--c-ink);
+}
+
+.mk-name__input {
+  flex: 1;
+  min-width: 0;
+  padding: calc(10 * var(--px)) 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-family: var(--f-kr);
+  font-weight: 600;
+  font-size: calc(32 * var(--px));
+  letter-spacing: -0.03em;
+  color: var(--c-ink);
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.mk-name__input::placeholder {
+  color: #c4c4c0;
+}
+
+.mk-name__count {
+  font-size: calc(14 * var(--px));
+  color: #80807c;
+}
+
+/* ---------- 넘어가기 — 피그마: 아래 가운데 (중심 y 780) ---------- */
+.mk-q__next {
+  position: absolute;
+  left: 50%;
+  top: calc(780 * var(--px));
+  translate: -50% -50%;
+  display: flex;
+  align-items: center;
+  padding: calc(8 * var(--px)) calc(16 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(24 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 50% 100%;
+  background-repeat: no-repeat;
+  transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out), background-size 0.4s var(--ease-out);
+}
+
+.mk-q__next:hover:not(:disabled) {
+  background-size: calc(100% - 32 * var(--px)) 1px;
+}
+
+/* 꼭 골라야 하는 문항에서 아직 안 골랐을 때 */
+.mk-q__next:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ---------- 완성: 패널 내용이 사라짐 ---------- */
+.make.is-dropping .mk-panel {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- 결과 (수식 완성) ---------- */
+.mk-result {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+}
+
+.make.is-result .mk-result {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* 왼쪽 정보 — 레시피 상세 화면과 같은 틀 (321 폭, 세로 선) */
+.mk-res__side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(16 * var(--px));
+  width: calc(321 * var(--px));
+  height: 100%;
+  padding: calc(30 * var(--px)) calc(40 * var(--px));
+  border-right: 0.5px solid var(--c-ink);
+  overflow-y: auto;
+  font-family: var(--f-kr);
+  color: var(--c-ink);
+}
+
+.mk-res__kicker {
+  font-size: calc(12 * var(--px));
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #80807c;
+}
+
+.mk-res__name {
+  font-size: calc(28 * var(--px));
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  word-break: keep-all;
+}
+
+.mk-res__ings {
+  border-top: 0.5px solid var(--c-ink);
+}
+
+.mk-res__ings li {
+  display: grid;
+  grid-template-columns: calc(44 * var(--px)) 1fr auto;
+  align-items: baseline;
+  padding: calc(6 * var(--px)) 0;
+  border-bottom: 0.5px solid var(--c-line);
+  font-size: calc(12 * var(--px));
+  line-height: 1.4;
+}
+
+.mk-res__sym {
+  font-family: var(--f-formula);
+  font-size: calc(16 * var(--px));
+}
+
+.mk-res__amt {
+  font-variant-numeric: tabular-nums;
+}
+
+.mk-res__meta {
+  font-size: calc(12 * var(--px));
+  color: #80807c;
+}
+
+.mk-res__actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--px));
+  margin-top: auto;
+}
+
+/* 버튼 — 레시피 상세 '뒤로 돌아가기'와 같은 모양 */
+.mk-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(6 * var(--px));
+  height: calc(35 * var(--px));
+  border: 1px solid var(--c-ink);
+  background: var(--c-white);
+  font-family: var(--f-kr);
+  font-size: calc(16 * var(--px));
+  letter-spacing: -0.03em;
+  color: var(--c-ink);
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.mk-btn:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+/* 오른쪽 수식 */
+.mk-res__formula {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: calc(20 * var(--px)) calc(60 * var(--px)) calc(40 * var(--px));
+  font-family: var(--f-formula);
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  white-space: pre-wrap;
+  color: var(--c-ink);
+}
+
+.mk-line {
+  display: block;
+  /* 1단계: 외곽선 글자 */
+  color: transparent;
+  -webkit-text-stroke: 0.6px var(--c-ink);
+  opacity: 0;
+  transform: translateY(calc(24 * var(--px)));
+}
+
+/* 빈 줄 = 단계 사이 간격 */
+.mk-line:empty {
+  height: 0.45em;
+}
+
+/* 마지막 줄 = (빵 이름) */
+.mk-line--end {
+  margin-top: 0.2em;
+  font-size: 1.25em;
+}
+
+/* 1단계: 외곽선으로 한 줄씩 빠르게 올라옴
+   2단계: 위에서부터 한 줄씩 채워짐 → 수식 완성 */
+.mk-result.is-drawn .mk-line {
+  opacity: 1;
+  transform: none;
+  color: var(--c-ink);
+  -webkit-text-stroke-color: transparent;
+  transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out), color 0.5s var(--ease-out),
+    -webkit-text-stroke-color 0.5s var(--ease-out);
+  transition-delay: calc(var(--i) * 30ms), calc(var(--i) * 30ms), calc(var(--i) * 90ms + 1.1s),
+    calc(var(--i) * 90ms + 1.1s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-line {
+    color: var(--c-ink);
+    -webkit-text-stroke: 0;
+  }
+}

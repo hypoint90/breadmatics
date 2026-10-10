@@ -1,0 +1,248 @@
+/* =========================================================
+   base.css — 폰트 · 디자인 토큰 · 리셋 · 공통 요소
+   ---------------------------------------------------------
+   ※ 크기 단위 규칙
+   피그마 원본 프레임은 1440 × 920 입니다.
+   --px 는 "피그마 1px" 이 화면에서 차지하는 크기입니다.
+   (가로 1440, 세로 920 중 더 좁은 쪽에 맞춰 자동 축소/확대)
+   피그마 수치를 그대로 쓰려면  calc(숫자 * var(--px))  로 적으면 됩니다.
+   예) 피그마 250px 글자 → font-size: calc(250 * var(--px));
+   ========================================================= */
+
+/* 수식 글꼴(Libertinus Math 웹폰트)에 빠져 있는 기호 ⊂ ⊃ 만 컴퓨터 기본 수학 글꼴로 대신 그림
+   (Windows: Cambria Math / Mac: STIX Two Math) */
+@font-face {
+  font-family: "BR Math Ops";
+  src: local("Cambria Math"), local("STIX Two Math"), local("STIXTwoMath-Regular"), local("Segoe UI Symbol"), local("Times New Roman");
+  unicode-range: U+2282-2283;
+}
+
+:root {
+  --px: min(calc(100vw / 1440), calc(100vh / 920));
+  --stage-w: calc(1440 * var(--px));
+  --nav-h: calc(50 * var(--px));
+
+  /* 색상 */
+  --c-ink: #1c1c1c;
+  --c-black: #000;
+  --c-white: #fff;
+  --c-paper: #fefefe;
+  --c-line: rgba(210, 210, 210, 0.87);
+  --c-line-dark: rgba(28, 28, 28, 0.87);
+  --c-track: #efefef;
+  --c-track-border: #9f9f9f;
+
+  /* 폰트 */
+  --f-sans: "Helvetica Neue", Helvetica, Arial, "Pretendard", sans-serif;
+  --f-kr: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* 시안 폰트. 윤곽이 일부러 고르지 않은(금속활자 질감) 서체라 크게 쓰면 거칠게 보일 수 있음 */
+  --f-serif: "Baskervville", "Times New Roman", serif;
+  /* 레시피 수식 폰트 — 피그마 시안 2종 중 선택 가능
+     세리프 시안:  var(--f-math)   /   산세리프 시안:  var(--f-sans) */
+  --f-math: "BR Math Ops", "Libertinus Math", "Libertinus Serif", "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+  --f-formula: var(--f-math);
+
+  /* 모션 (나중에 여기서 일괄 조정) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 0.25s;
+  --dur-base: 0.5s;
+  --dur-slow: 0.9s;
+}
+
+/* ---------- 리셋 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--c-white);
+  color: var(--c-black);
+  font-family: var(--f-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* 페이지별로 스크롤 영역을 따로 관리 */
+  /* 텍스트 드래그 선택 막기 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 이미지: 클릭·드래그·저장 막기 (클릭은 감싸는 버튼/링크가 받음) */
+img {
+  display: block;
+  max-width: 100%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ---------- 페이지 컨테이너 ---------- */
+/* 페이지 전환: 페이지 자체의 opacity 는 바꾸지 않고, 위에 덮은 막(::after)이 걷히는 방식.
+   (opacity 가 1 미만인 동안에는 배경 블러 backdrop-filter 가 제대로 안 그려져서
+    메인 유리 블러·레시피 수식 블러가 들어갈 때 '툭' 켜지던 문제 방지) */
+.page {
+  position: fixed;
+  inset: var(--nav-h) 0 0 0;
+  overflow: hidden;
+  background: var(--c-white);
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-base);
+}
+
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: inherit; /* 페이지 배경색으로 덮음 */
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.page.is-active {
+  z-index: 2; /* 들어오는 페이지가 위로 */
+  visibility: visible;
+  transition: visibility 0s;
+}
+
+.page.is-active::after {
+  opacity: 0;
+}
+
+/* ---------- 페이지 전환: 올라가며 사라지고 → 아래에서 올라옴 (js/app.js 라우터) ----------
+   --page-shift: 움직이는 거리 / 시간은 아래 transition 에서 조정 (나가는 시간은 app.js LEAVE 와 맞춤) */
+.page {
+  --page-shift: calc(70 * var(--px));
+}
+
+/* 들어오는 페이지: 제자리로 올라오며 막이 걷힘 */
+.page.is-active {
+  transition: visibility 0s, transform 0.9s var(--ease-out);
+}
+
+.page.is-active::after {
+  transition: opacity 0.7s var(--ease-out);
+}
+
+/* 시작 위치 (아래로 내려가 있고 막이 덮여 있음) — 한 프레임만 붙었다 떨어짐 */
+.page.is-entering {
+  transform: translateY(var(--page-shift));
+  transition: none;
+}
+
+.page.is-entering::after {
+  opacity: 1;
+  transition: none;
+}
+
+/* 나가는 페이지: 위로 올라가며 흰 막에 덮여 사라짐 */
+.page.is-leaving {
+  transform: translateY(calc(var(--page-shift) * -1));
+  transition: transform 0.42s cubic-bezier(0.55, 0, 0.75, 0.2);
+}
+
+.page.is-leaving::after {
+  opacity: 1;
+  background: var(--c-white);
+  transition: opacity 0.42s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* 메인은 내비 아래가 아니라 화면 전체를 씀 */
+.page--full {
+  inset: 0;
+}
+
+/* 1440 기준 스테이지 (가운데 정렬) */
+.stage {
+  position: relative;
+  width: var(--stage-w);
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* ---------- 공통: 화살표 아이콘 ---------- */
+.arrow {
+  display: inline-block;
+  width: calc(18 * var(--px));
+  height: calc(8 * var(--px));
+  flex: none;
+}
+
+.arrow--left {
+  transform: scaleX(-1);
+}
+
+/* ---------- 공통: 검정 알약 버튼 (한번에 보기 / 자세히 보기) ---------- */
+.pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(5 * var(--px));
+  min-width: calc(89 * var(--px));
+  padding: calc(8 * var(--px)) calc(18 * var(--px)) calc(5 * var(--px));
+  border-radius: calc(12 * var(--px));
+  background: var(--c-ink);
+  color: var(--c-white);
+  font-family: var(--f-kr);
+  font-weight: 500;
+  font-size: calc(10 * var(--px));
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+  backdrop-filter: blur(1.5px);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.pill:hover {
+  transform: translateY(calc(-2 * var(--px)));
+}
+
+.pill svg {
+  width: calc(7 * var(--px));
+  height: calc(3 * var(--px));
+}
+
+/* 접근성: 화면에는 숨기고 스크린리더에만 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

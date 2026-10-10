@@ -1,0 +1,110 @@
+/* =========================================================
+   book.css — Manual book (재료 / 메뉴얼 나누는 페이지)
+   화면을 세로선으로 반 나눠 왼쪽 재료 · 오른쪽 메뉴얼
+   ========================================================= */
+
+.book {
+  display: flex;
+}
+
+.book__part {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 calc(60 * var(--px));
+  color: var(--c-ink);
+  transition: background-color 0.6s var(--ease-out), color 0.6s var(--ease-out);
+}
+
+.book__part + .book__part {
+  border-left: 0.5px solid var(--c-ink);
+}
+
+/* 번호 — 왼쪽 위 */
+.book__no {
+  position: absolute;
+  left: calc(60 * var(--px));
+  top: calc(30 * var(--px));
+  font-weight: 700;
+  font-size: calc(90 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+/* 영문 큰 제목 — 메인 타이틀과 같은 세리프 */
+.book__en {
+  font-family: var(--f-serif);
+  font-size: calc(150 * var(--px));
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.book__kr {
+  margin-top: calc(20 * var(--px));
+  font-family: var(--f-kr);
+  font-weight: 700;
+  font-size: calc(32 * var(--px));
+  letter-spacing: -0.03em;
+}
+
+.book__desc {
+  margin-top: calc(14 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(16 * var(--px));
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: #80807c;
+  transition: color 0.6s var(--ease-out);
+}
+
+/* 들어가기 → — 오른쪽 아래 */
+.book__go {
+  position: absolute;
+  right: calc(60 * var(--px));
+  bottom: calc(40 * var(--px));
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(18 * var(--px));
+  letter-spacing: -0.03em;
+}
+
+.book__go .arrow {
+  transition: transform 0.6s var(--ease-out);
+}
+
+/* 마우스 오버: 검정 바탕으로 뒤집히고 제목이 살짝 밀려남 */
+.book__part:hover {
+  background: var(--c-ink);
+  color: var(--c-white);
+}
+
+.book__part:hover .book__desc {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.book__part:hover .book__en {
+  transform: translateX(calc(16 * var(--px)));
+}
+
+.book__part:hover .book__go .arrow {
+  transform: translateX(calc(6 * var(--px)));
+}
+
+/* 등장 모션 (메인과 같은 방식) */
+.book [data-reveal] {
+  opacity: 0;
+  transform: translateY(calc(40 * var(--px)));
+}
+
+.book.is-active [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out),
+    background-color 0.6s var(--ease-out), color 0.6s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 0.12s), calc(var(--i, 0) * 0.12s), 0s, 0s;
+}
