@@ -17,7 +17,8 @@ Write-Host "Serving $root at http://localhost:$Port"
 while ($listener.IsListening) {
   $ctx = $listener.GetContext()
   $path = [Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath.TrimStart("/"))
-  if ($path -eq "") { $path = "index.html" }
+  # 폴더 주소(/, /v2/)는 그 안의 index.html
+  if ($path -eq "" -or $path.EndsWith("/")) { $path = $path + "index.html" }
   $file = Join-Path $root $path
   $full = [IO.Path]::GetFullPath($file)
 

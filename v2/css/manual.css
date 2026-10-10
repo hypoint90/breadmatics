@@ -1,0 +1,182 @@
+/* =========================================================
+   manual.css — 메뉴얼 (피그마: 메뉴얼 / 메뉴얼_01~07 open·close)
+   ========================================================= */
+
+/* 스크롤은 js/manual.js 가 목록을 transform 으로 움직여 처리 */
+.manual {
+  overflow: hidden;
+}
+
+.manual__list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(28 * var(--px));
+  width: var(--stage-w);
+  margin: 0 auto;
+  padding: calc(35 * var(--px)) 0 100vh; /* 마지막 항목도 위까지 올릴 수 있도록 아래 여백 */
+  will-change: transform;
+}
+
+/* ---------- 아코디언 항목 ---------- */
+.m-item {
+  position: relative;
+  padding: 0 calc(30 * var(--px));
+  --read: 0; /* 읽은 정도 0~1 (js 에서 갱신) */
+}
+
+/* 읽기 진행 막대 — 열린 항목 왼쪽 세로선 */
+.m-item__progress {
+  position: absolute;
+  /* 위 큰 숫자(01~07, 90px)의 가운데 — 숫자 글자 폭 중심이 왼쪽에서 약 78 */
+  left: calc(78 * var(--px) - 0.5px);
+  top: calc(110 * var(--px));
+  bottom: calc(40 * var(--px));
+  width: 1px;
+  background: #e3e3e3;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.m-item__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--c-ink);
+  transform: scaleY(var(--read));
+  transform-origin: top;
+}
+
+.m-item.is-open .m-item__progress {
+  opacity: 1;
+}
+
+/* 이미 읽은 항목은 살짝 흐리게 */
+.m-item.is-done .m-item__head {
+  color: #b5b5b5;
+}
+
+.m-item__head {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: calc(5 * var(--px));
+  text-align: left;
+  color: var(--c-ink);
+  font-weight: 700;
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.m-item__num {
+  width: calc(134 * var(--px));
+  flex: none;
+  font-size: calc(90 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.m-item__title {
+  margin-top: calc(37 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(32 * var(--px));
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+.m-item__head:hover .m-item__num {
+  transform: translateX(calc(8 * var(--px)));
+}
+
+/* ---------- 열고 닫기 ----------
+   구조:  제목 / 본문(가림막) / 선
+   - 본문 높이는 js/manual.js 가 애니메이션 (0 ↔ 내용 높이)
+   - 본문은 overflow:hidden 이라 '선' 아래 공간에 가려져 있다가
+     선이 내려가는 동안 내용이 위로 밀려 올라오며 드러남
+   - 닫힐 때는 반대로 선이 올라가며 내용이 선 뒤로 들어감 */
+.m-item__body {
+  height: 0;
+  overflow: hidden;
+}
+
+.m-sections {
+  will-change: transform;
+}
+
+.m-item__line {
+  display: block;
+  height: 1px;
+  background: var(--c-ink);
+}
+
+/* ---------- 본문 섹션 ---------- */
+.m-sections {
+  display: flex;
+  flex-direction: column;
+  gap: calc(40 * var(--px));
+  padding: calc(25 * var(--px)) calc(140 * var(--px)) calc(40 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(18 * var(--px));
+  letter-spacing: -0.02em;
+  color: var(--c-black);
+}
+
+.m-sec {
+  display: flex;
+  flex-direction: column;
+  gap: calc(15 * var(--px));
+  padding-bottom: calc(40 * var(--px));
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.m-sec:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.m-sec__title {
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.m-sec__row {
+  display: grid;
+  grid-template-columns: calc(551 * var(--px)) 1fr;
+  align-items: start;
+}
+
+.m-sec__text {
+  font-weight: 500;
+  line-height: 1.5;
+  max-width: calc(530 * var(--px));
+  white-space: pre-line;
+}
+
+/* 표기/의미 표 */
+.m-table {
+  display: grid;
+  grid-auto-flow: row;
+  column-gap: calc(60 * var(--px));
+  row-gap: calc(10 * var(--px));
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.m-table--2 {
+  grid-template-columns: calc(60 * var(--px)) auto;
+}
+
+.m-table--3 {
+  grid-template-columns: calc(63 * var(--px)) calc(240 * var(--px)) auto;
+}
+
+/* 머리줄 없는 표 (04 성형 — 수식 요약) */
+.m-table--plain {
+  grid-template-columns: repeat(3, max-content);
+  column-gap: calc(24 * var(--px));
+  row-gap: calc(14 * var(--px));
+}
+
+/* 준비 중 표시 */
+.m-empty {
+  color: #9a9a9a;
+}
