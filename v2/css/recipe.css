@@ -274,9 +274,24 @@
   border-bottom: 1px solid rgba(221, 221, 221, 0.3);
 }
 
-/* 가볍게: 앞뒤(위아래) 카드는 뒤가 흰 바탕뿐이라 흐림이 보이지 않음 → 흐림 계산을 끔 (보이는 모습은 같음)
-   흐림은 가운데 카드에만 */
-.rx-card:not([data-slot="0"]) .rx-card__glass {
+/* 흐림은 카드가 커져(가운데 자리) 다 자리 잡은 뒤에만 — 그전에는 불투명한 회색 카드
+   가운데 자리로 오면 회색이 걷히며 흐림이 서서히 들어옴 (이동 0.8초 중 0.55초 뒤부터)
+   앞뒤 카드·화면 밖 카드는 흐림 계산을 하지 않아 가벼움 */
+.rx-card__glass {
+  background: rgba(232, 232, 232, 0.72); /* 흐림 전: 회색 */
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition: background-color 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out), -webkit-backdrop-filter 0.5s var(--ease-out);
+}
+
+.rx-card[data-slot="0"] .rx-card__glass {
+  background: rgba(217, 217, 217, 0.14);
+  -webkit-backdrop-filter: blur(calc(15 * var(--px)));
+  backdrop-filter: blur(calc(15 * var(--px)));
+  transition-delay: 0.55s;
+}
+
+.rx-card[data-slot^="hide"] .rx-card__glass {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
