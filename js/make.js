@@ -18,10 +18,7 @@ BR.pages.make = (() => {
   /* ---------- 모션 값 (여기서 조정) ---------- */
   const AUTO_NEXT = 520; // 하나만 고르는 문항: 고른 뒤 다음 문항으로 넘어가기까지(ms)
   const SWAP_OUT = 380; // 문항이 사라지는 시간(ms) — css/make.css .mk-q.is-out 과 맞춤
-  const DROP_TIME = 2200; // 완성 시 글자가 떠올랐다 바닥 아래로 떨어지는 시간(ms) — 넉넉히
-  const FLOAT_LIFT = 520; // 완성 시 위로 튀어 오르는 속도 (클수록 높이 뜸)
-  const FLOAT_TIME = 0.45; // 떠 있는 시간(초) — 이 동안 중력이 약해짐
-  const FLOAT_GRAVITY = 0.3; // 떠 있는 동안 중력 배율
+  const DROP_TIME = 2200; // 완성 시 글자가 바닥 아래로 떨어지는 시간(ms) — 넉넉히 (다 떨어지면 바로 넘어감)
 
   const mkName = (sym) => D.names[sym] || sym;
   const range = (r, unit) => (r[0] === r[1] ? `${r[0]}${unit}` : `${r[0]}~${r[1]}${unit}`);
@@ -398,6 +395,7 @@ BR.pages.make = (() => {
     let last = 0;
     let floorOn = true;
     let onEmpty = null;
+    let fallen = []; // 완성 때 바닥 아래로 떨어진 글자들 (결과 화면에서 위에서 다시 떨어뜨림 — BR.makeRain)
 
     const unit = pxUnit;
 
@@ -464,7 +462,7 @@ BR.pages.make = (() => {
       let top = floorOn ? H : Infinity;
       let supports = [];
       for (const o of bodies) {
-        if (o === b || o.dead) continue;
+        if (o === b || o.dead || o.ghost) continue; // 결과 화면에서 떨어지는 글자(ghost)는 받침이 되지 않음
         const overlapX = Math.abs(o.x - b.x) < (o.w + b.w) / 2 - 2;
         const oTop = o.y - o.h / 2;
         if (!overlapX || oTop < prevBottom - 2) continue;
@@ -494,17 +492,14 @@ BR.pages.make = (() => {
         }
         awake++;
         const prevBottom = b.y + b.h / 2;
-        // 완성 직후 잠깐은 중력을 약하게 → 공중으로 둥실 떠올랐다가 떨어짐
-        if (b.float > 0) {
-          b.vy += g * FLOAT_GRAVITY * dt;
-          b.float -= dt;
-        } else b.vy += g * dt;
+        b.vy += g * dt;
         b.y += b.vy * dt;
         b.x += b.vx * dt;
         b.x = Math.min(Math.max(b.x, b.w / 2), W - b.w / 2);
         b.rot += b.vr * dt;
 
-        const { top, supports } = groundOf(b, prevBottom);
+        // 결과 화면에서 떨어지는 글자(ghost)는 서로 부딪히지 않고 그대로 통과
+        const { top, supports } = b.ghost ? { top: Infinity, supports: [] } : groundOf(b, prevBottom);
         if (b.y + b.h / 2 >= top) {
           b.y = top - b.h / 2;
           // 세게 떨어지면 살짝 튀어오름
@@ -574,11 +569,18 @@ BR.pages.make = (() => {
     const drop = (done) => {
       floorOn = false;
       const px = unit();
+      // 떨어진 글자 기억 (같은 가로 위치·크기로 결과 화면 위에서 이어서 떨어짐)
+      fallen = bodies.map((b) => ({
+        text: b.el.textContent,
+        math: b.el.classList.contains("mk-fall--math"),
+        fs: b.fs,
+        rx: b.x / (W || 1),
+        rot: b.rot
+      }));
       bodies.forEach((b) => {
         b.sleep = false;
-        b.wait = Math.random() * 0.25; // 조금씩 다른 때에 떠오르기 시작
-        b.vy = -(FLOAT_LIFT + Math.random() * 260) * px; // 공중으로 띄웠다가
-        b.float = FLOAT_TIME;
+        b.wait = Math.random() * 0.25; // 조금씩 다른 때에 떨어지기 시작
+        b.vy = Math.random() * 120 * px; // 튀어 오르지 않고 그대로 아래로
         b.vx = (Math.random() - 0.5) * 160 * px;
         b.vr = (Math.random() - 0.5) * 120;
       });
@@ -587,6 +589,47 @@ BR.pages.make = (() => {
         onEmpty = null;
         done();
       }
+      start();
+    };
+
+    // 결과 화면 시작: 방금 바닥 아래로 빠진 글자들이 화면 위에서 이어서 떨어져 내려가 사라짐
+    // 서로 부딪히지 않고(ghost) 원래보다 작은 글자(RAIN_SCALE)로 자연스럽게 떨어짐
+    // (2안 — BR.makeRain. 완성 때 떨어지는 움직임과 이어지도록 같은 가로 자리·빠른 속도로 시작)
+    const rain = () => {
+      if (!fallen.length) return;
+      const RAIN_SCALE = 0.5; // 결과 화면에서 떨어지는 글자 크기 (원래 크기 대비)
+      floorOn = false;
+      onEmpty = null;
+      const px = unit();
+      fallen.forEach((f, k) => {
+        const el = document.createElement("span");
+        el.className = `mk-fall${f.math ? " mk-fall--math" : ""}`;
+        el.textContent = f.text;
+        el.style.fontSize = `${f.fs * RAIN_SCALE * px}px`;
+        pileEl.appendChild(el);
+        const w = el.offsetWidth;
+        const h = el.offsetHeight;
+        const b = {
+          tag: `rain:${k}`,
+          ghost: true,
+          el,
+          fs: f.fs,
+          w,
+          h,
+          x: Math.min(Math.max(f.rx * W, w / 2), W - w / 2),
+          y: -h / 2 - Math.random() * 160 * px,
+          vx: (Math.random() - 0.5) * 120 * px,
+          vy: (500 + Math.random() * 400) * px, // 떨어지던 흐름을 이어서
+          rot: f.rot,
+          vr: (Math.random() - 0.5) * 60,
+          rest: 0,
+          wait: Math.random() * 0.45,
+          sleep: false
+        };
+        bodies.push(b);
+        draw(b);
+      });
+      fallen = [];
       start();
     };
 
@@ -619,7 +662,7 @@ BR.pages.make = (() => {
       start();
     };
 
-    return { add, remove, tags, drop, clear, start, stop, measure, resize };
+    return { add, remove, tags, drop, rain, clear, start, stop, measure, resize };
   })();
 
   // 지금 선택 상태에 맞춰 배경 글자 추가/제거
@@ -702,6 +745,19 @@ BR.pages.make = (() => {
     return `${pad2(d.getMonth() + 1)}.${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
   };
 
+  // 기록된 지 얼마나 됐는지 — 방금 전 / 3분 전 / 2시간 전 / 어제 / 5일 전 (일주일 넘으면 날짜)
+  const agoText = (t) => {
+    const s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 60) return "방금 전";
+    if (s < 3600) return `${Math.floor(s / 60)}분 전`;
+    if (s < 86400) return `${Math.floor(s / 3600)}시간 전`;
+    const days = Math.floor(s / 86400);
+    if (days === 1) return "어제";
+    if (days < 7) return `${days}일 전`;
+    const d = new Date(t);
+    return `${d.getMonth() + 1}월 ${d.getDate()}일`;
+  };
+
   let collection = [];
   let latestId = null;
 
@@ -712,11 +768,11 @@ BR.pages.make = (() => {
       <ol class="mk-col__list">${[...collection]
         .reverse()
         .map((r, k) => {
-          const no = collection.length - k;
+          const no = k + 1; // 위(가장 최근)부터 01
           const first = (r.lines.find((l) => l.trim().startsWith("→")) || "").trim();
           return `<li><button type="button" class="mk-col__item${r.id === shownId ? " is-current" : ""}" data-id="${r.id}">
               <span class="mk-col__no">${pad2(no)}</span>
-              <span class="mk-col__name">${BR.esc(r.name)}${r.id === latestId ? `<em>방금 만든 빵</em>` : ""}</span>
+              <span class="mk-col__name">${BR.esc(r.name)}${r.id === latestId ? `<em>방금 만든 빵</em>` : `<small class="mk-col__ago">${agoText(r.createdAt)}</small>`}</span>
               <span class="mk-col__meta">${BR.esc(r.type)} · ${dateText(r.createdAt)}</span>
               <span class="mk-col__eq">${BR.esc(first)}</span>
             </button></li>`;
@@ -759,8 +815,12 @@ BR.pages.make = (() => {
     latestId = rec.id;
     collection = saveRecord(rec);
     if (!collection.some((r) => r.id === rec.id)) collection = [...collection, rec];
+    // 결과 화면이 처음 나타나는 동안만 표시 (목록에서 다른 빵을 눌러 다시 그릴 때는 들어오는 모션 없음)
+    resultEl.classList.add("is-entering");
+    setTimeout(() => resultEl.classList.remove("is-entering"), 1600);
     root.classList.add("is-result");
     renderRecord(rec);
+    if (BR.makeRain) pile.rain(); // 2안: 떨어진 글자들이 위에서 이어서 떨어지며 결과 화면 시작
   };
 
   // 수식 글자 크기: 크게 시작해서 한 화면에 들어오도록 줄이되, 너무 작아지지 않게 (넘치면 스크롤)
@@ -776,6 +836,30 @@ BR.pages.make = (() => {
     }
   };
 
+  /* ---------- 이전에 만든 빵 보러 가기 (2안 버튼) ----------
+     문항 도중에도 결과 화면을 열어 가장 최근 빵부터 보여 줌. '다시 만들기'로 처음 문항으로 */
+  const syncHistory = () => {
+    const btn = root.querySelector(".mk-history");
+    if (!btn) return;
+    const n = loadCollection().length;
+    btn.hidden = n === 0;
+    const count = btn.querySelector(".mk-history__count");
+    if (count) count.textContent = pad2(n);
+  };
+
+  const showHistory = () => {
+    collection = loadCollection();
+    if (!collection.length || root.classList.contains("is-result")) return;
+    S.done = true; // 문항 입력 막기
+    clearTimeout(autoTimer);
+    pile.clear(); // 쌓여 있던 글자는 비움 ('다시 만들기'로 돌아가면 처음부터)
+    latestId = null;
+    root.classList.add("is-dropping", "is-result");
+    resultEl.classList.add("is-entering");
+    setTimeout(() => resultEl.classList.remove("is-entering"), 1600);
+    renderRecord(collection[collection.length - 1]);
+  };
+
   const restart = () => {
     S = fresh();
     pile.clear();
@@ -784,7 +868,9 @@ BR.pages.make = (() => {
     setTimeout(() => (resultEl.innerHTML = ""), 500);
     qBox.innerHTML = "";
     renderQuestion(1);
+    syncHistory();
   };
+
 
   /* ---------------------------------------------------------
      페이지 등록
@@ -809,6 +895,10 @@ BR.pages.make = (() => {
         if (rec) renderRecord(rec);
       }
     });
+    // (2안) 문항 화면의 '이전에 만든 빵' 버튼 — 버튼이 있을 때만 (v2/index.html .mk-history)
+    root.querySelector(".mk-history")?.addEventListener("click", showHistory);
+    syncHistory();
+
     window.addEventListener("resize", () => BR.router.current() === "make" && pile.resize());
 
     renderQuestion(1);

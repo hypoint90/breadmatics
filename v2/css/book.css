@@ -36,7 +36,7 @@
 /* 영문 큰 제목 — 메인 타이틀과 같은 세리프 */
 .book__en {
   font-family: var(--f-serif);
-  font-size: calc(150 * var(--px));
+  font-size: calc(102 * var(--px)); /* 150 → 128 → 20% 줄임 */
   line-height: 1;
   letter-spacing: -0.05em;
   transition: transform 0.8s var(--ease-out);
@@ -79,7 +79,7 @@
 
 /* 마우스 오버: 검정 바탕으로 뒤집히고 제목이 살짝 밀려남 */
 .book__part:hover {
-  background: var(--c-ink);
+  background: #050505; /* 더 진한 검정 (기본 잉크 #1c1c1c 보다) — 클릭 전환 면(.book-wipe)과 같은 색 */
   color: var(--c-white);
 }
 
@@ -95,16 +95,130 @@
   transform: translateX(calc(6 * var(--px)));
 }
 
-/* 등장 모션 (메인과 같은 방식) */
-.book [data-reveal] {
+/* 등장 모션 — 왼쪽(재료)은 왼쪽에서, 오른쪽(메뉴얼)은 오른쪽에서 가운데로 모이며 들어옴
+   (다른 페이지의 '아래에서 올라오기 + 흰 막 걷힘'은 여기서는 쓰지 않음) */
+.page.book.is-entering {
+  transform: none;
+}
+
+.page.book.is-entering::after {
   opacity: 0;
-  transform: translateY(calc(40 * var(--px)));
+}
+
+.page.book.is-active:not(.is-leaving)::after {
+  transition: none;
+}
+
+.book [data-reveal] {
+  --from: -1; /* 왼쪽에서 */
+  opacity: 0;
+  transform: translateX(calc(var(--from) * 260 * var(--px)));
+}
+
+.book [data-reveal] + [data-reveal] {
+  --from: 1; /* 오른쪽에서 */
 }
 
 .book.is-active [data-reveal] {
   opacity: 1;
   transform: none;
-  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out),
+  transition: opacity 0.9s var(--ease-out), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
     background-color 0.6s var(--ease-out), color 0.6s var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 0.12s), calc(var(--i, 0) * 0.12s), 0s, 0s;
+}
+
+/* ---------- 옵션 클릭 전환 (v2/js/book-wipe.js) ----------
+   누른 칸에서 검정 면이 화면을 채우고 → 왼쪽으로 밀려 나가며 다음 페이지가 드러남 */
+.book-wipe {
+  position: fixed;
+  z-index: 105; /* 페이지 위, 메뉴 탭(110) 아래 */
+  background: #050505; /* 메뉴얼북 검정 칸과 같은 색 */
+  pointer-events: none;
+}
+
+/* 1) 화면 채우기 — 시간은 book-wipe.js GROW 와 맞춤 */
+.book-wipe.is-full {
+  transition: left 0.6s cubic-bezier(0.7, 0, 0.2, 1), top 0.6s cubic-bezier(0.7, 0, 0.2, 1),
+    width 0.6s cubic-bezier(0.7, 0, 0.2, 1), height 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+/* 3) 왼쪽으로 밀려 나감 — 시간은 book-wipe.js SLIDE 와 맞춤 */
+.book-wipe.is-out {
+  transform: translateX(-100%);
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+/* 검정 면 가운데 페이지 이름 (피그마 시안) — 영문 가는 고딕 + 아래 작은 한글
+   면이 거의 다 찼을 때 영문은 화면 왼쪽에서, 한글은 오른쪽에서 가운데로 들어옴
+   (가는 굵기가 없는 윈도우 Arial 대신 Pretendard Light 가 쓰이도록 Arial 을 건너뜀) */
+.book-wipe__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(22 * var(--px));
+  white-space: nowrap;
+}
+
+.book-wipe__en {
+  font-family: "Helvetica Neue", "Pretendard", sans-serif;
+  font-weight: 300;
+  font-size: calc(124 * var(--px));
+  line-height: 1;
+  letter-spacing: -0.045em;
+  color: #f2f2f2;
+}
+
+.book-wipe__kr {
+  font-family: var(--f-kr);
+  font-weight: 300;
+  font-size: calc(40 * var(--px));
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #cfcfcf;
+}
+
+.book-wipe__en,
+.book-wipe__kr {
+  opacity: 0;
+  transform: translateX(calc(var(--from) * 420 * var(--px)));
+}
+
+.book-wipe__en { --from: -1; } /* 왼쪽에서 */
+.book-wipe__kr { --from: 1; }  /* 오른쪽에서 */
+
+.book-wipe.is-full .book-wipe__en,
+.book-wipe.is-full .book-wipe__kr {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.6s var(--ease-out) 0.3s, transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+}
+
+.book-wipe.is-full .book-wipe__kr {
+  transition-delay: 0.38s;
+}
+
+/* 3) 재료로 갈 때는 오른쪽으로 밀려 나감 */
+.book-wipe.is-out-right {
+  transform: translateX(100%);
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+/* ---------- 메뉴얼북에서 나갈 때 (들어올 때를 거꾸로 재생) ----------
+   두 칸이 가운데에서 좌우로 벌어지며 사라짐 (메뉴 카드로 이동할 때. 칸을 누르면 검정 면 전환) */
+.page.book.is-leaving {
+  transform: none;
+}
+
+.page.book.is-leaving::after {
+  opacity: 0;
+}
+
+.book.is-leaving [data-reveal] {
+  opacity: 0;
+  transform: translateX(calc(var(--from) * 260 * var(--px)));
+  /* 흐려지는 건 늦게 시작해 천천히 (벌어지는 움직임이 먼저 보이게) */
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 1, 1) 0.35s, transform 0.7s cubic-bezier(0.7, 0, 0.84, 0);
 }

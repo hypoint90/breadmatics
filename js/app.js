@@ -86,7 +86,7 @@ BR.router = (() => {
   };
 
   // 페이지 전환 시간(ms) — css/base.css 의 .page.is-leaving 과 맞춤
-  const LEAVE = 420;
+  const LEAVE = 420; // 2안은 BR.leaveTime 으로 따로 정함 (나가는 모션이 들어오는 모션의 역재생이라 더 김)
   let swapTimer = null;
   let pending = null; // 나가는 중인 페이지가 끝나면 할 일
 
@@ -142,7 +142,7 @@ BR.router = (() => {
         const run = pending;
         pending = null;
         run?.();
-      }, LEAVE);
+      }, BR.leaveTime || LEAVE);
     } else {
       show(page, param, prev);
     }

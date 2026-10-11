@@ -1,7 +1,9 @@
 /* =========================================================
-   main.css (2안) — 메인: 미니멀
-   제목 두 줄(고딕 + 세리프 이탤릭) · 메뉴 세 줄 · 한 줄 소개, 나머지는 여백
-   피그마 1440 × 920 기준 (메인은 화면 전체를 씀)
+   main.css (2안) — 메인   피그마: 메인 (2304:910) / 타이틀 호버 (2307:1180)
+   - 왼쪽 위: BREADMATICS(고딕) / RECIPE(세리프) — 140px, 옅은 회색
+     마우스를 올리면 타이틀 전체가 검정 + 마우스 근처 글자만 이탤릭 (v2/js/main-title.js)
+   - 오른쪽 아래: 큰 메뉴 세 줄 (90px)
+   위치는 화면 기준 (메뉴 탭과 같은 왼쪽 선 60, 세로는 화면 가운데 ± 피그마 값)
    ========================================================= */
 
 .main {
@@ -18,68 +20,158 @@
   display: none;
 }
 
-/* 제목 + 메뉴 묶음 — 왼쪽 60, 세로 가운데 */
-.mx {
-  position: absolute;
-  left: calc(60 * var(--px));
-  top: 50%;
-  translate: 0 -50%;
-  display: flex;
-  flex-direction: column;
-  gap: calc(64 * var(--px));
-}
-
-/* ---------- 제목: 고딕 한 줄 + 세리프 이탤릭 한 줄 ---------- */
+/* ---------------------------------------------------------
+   타이틀
+   --------------------------------------------------------- */
 .mx-title {
-  display: flex;
-  flex-direction: column;
-  font-weight: 400;
-  font-size: calc(104 * var(--px));
-  line-height: 0.95;
-  color: var(--c-ink);
-}
+  --mx-move: 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* 이탤릭으로 바뀌는 시간과 곡선 */
+  --mx-slant: -12deg; /* 고딕(헬베티카) 이탤릭 기울기 */
 
-.mx-title span {
-  font-family: var(--f-sans);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-}
-
-.mx-title em {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-/* ---------- 메뉴 세 줄 ---------- */
-.mx-menu {
+  position: absolute;
+  left: calc(60 * var(--px)); /* 메뉴 탭 왼쪽 끝과 같은 선 (피그마 36) */
+  top: calc(50% - 368 * var(--px)); /* 피그마 top 107 → 15 위로 (92) */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: calc(10 * var(--px));
+  font-size: calc(159 * var(--px)); /* 피그마 140 → 168 → 151 → 5% 키움 */
+  font-weight: 600; /* 피그마 Medium(500) 에서 한 단계 굵게 */
+  line-height: 1;
+  letter-spacing: -0.03em; /* -4.2px */
+  text-transform: uppercase;
+  color: #c3c3c3;
+  cursor: default;
 }
 
-.mx-menu a {
-  position: relative;
-  font-size: calc(18 * var(--px));
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+/* 마우스를 올리면 타이틀 전체가 검정 */
+.mx-title:hover {
   color: var(--c-ink);
 }
 
-/* 마우스 오버: 밑줄이 왼쪽에서 그어짐 */
+/* 굵기가 부드럽게 변하려면 굵기를 자유롭게 바꿀 수 있는 웹폰트(가변 폰트)가 필요해서
+   BREADMATICS 는 헬베티카와 닮은 Inter Tight, RECIPE 는 Baskervville 가변 폰트를 씀 (v2/index.html)
+   평소: 얇고 자간 좁게 → 마우스를 올리면 굵고 자간 보통 (0.8초)
+   마우스가 나가도 --mx-hold(0.5초) 동안은 호버 모양(검정 · 굵게 · 자간)을 유지했다가 돌아감 — 이탤릭은 따로(main-title.js HOLD) */
+.mx-title {
+  --mx-weight: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  --mx-hold: 0.5s;
+}
+
+/* BREADMATICS */
+.mx-title__sans {
+  font-family: "Inter Tight", var(--f-sans);
+  font-weight: 300;
+  letter-spacing: -0.055em; /* 평소 자간 좁게 */
+  white-space: nowrap;
+  transition: font-weight var(--mx-weight) var(--mx-hold), letter-spacing var(--mx-weight) var(--mx-hold);
+}
+
+/* RECIPE */
+.mx-title__serif {
+  font-family: var(--f-serif);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  transition: font-weight var(--mx-weight) var(--mx-hold), letter-spacing var(--mx-weight) var(--mx-hold);
+}
+
+.mx-title:hover .mx-title__sans,
+.mx-title:hover .mx-title__serif {
+  letter-spacing: -0.03em;
+  transition-delay: 0s; /* 올릴 때는 바로 */
+}
+
+.mx-title:hover .mx-title__sans {
+  font-weight: 650;
+}
+
+.mx-title:hover .mx-title__serif {
+  font-weight: 550; /* 650 에서 한 단계 낮춤 */
+}
+
+/* 글자 하나 (v2/js/main-title.js 가 나눔). 마우스 근처면 .is-it */
+.mx-l {
+  position: relative;
+  display: inline-block;
+  transform-origin: 50% 78%; /* 기준선(글자 아래)은 그대로 두고 기울임 */
+  transition: transform var(--mx-move);
+}
+
+/* 고딕 글자 — 헬베티카 이탤릭은 정자체를 약 12° 기울인 모양이라 기울이기로 부드럽게 전환 */
+.mx-title__sans .mx-l.is-it {
+  transform: skewX(var(--mx-slant));
+}
+
+/* 세리프 글자 — 이탤릭은 글자 모양 자체가 달라서, 정자체가 기울며 사라지고 이탤릭이 겹쳐 나타남 */
+.mx-l__up,
+.mx-l__it {
+  display: inline-block;
+  transform-origin: 50% 78%;
+  transition: opacity 0.5s var(--ease-out), transform var(--mx-move);
+}
+
+.mx-l__it {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-style: italic;
+  opacity: 0;
+  transform: skewX(10deg); /* 덜 기운 상태에서 출발 */
+}
+
+.mx-l.is-it .mx-l__up {
+  opacity: 0;
+  transform: skewX(-14deg);
+}
+
+.mx-l.is-it .mx-l__it {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.06s;
+}
+
+/* ---------------------------------------------------------
+   메뉴 세 줄 — 오른쪽 아래 (피그마: 왼쪽 = 가운데 + 10, 아래 끝 860 → 40 위로)
+   --------------------------------------------------------- */
+.mx-menu {
+  position: absolute;
+  left: calc(50% + 10 * var(--px));
+  bottom: calc(50% - 390 * var(--px)); /* 피그마보다 10 위로 (40 올렸다가 30 내림) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(21 * var(--px));
+}
+
+.mx-menu a {
+  --halo: 0.04em; /* 밑줄을 끊는 흰 테두리 두께 */
+
+  position: relative;
+  z-index: 0; /* 밑줄(::after, z -1)이 글자 뒤로 가게 */
+  font-family: var(--f-sans);
+  font-weight: 600; /* 500 에서 한 단계 굵게 */
+  font-size: calc(90 * var(--px));
+  line-height: 1;
+  letter-spacing: -0.03em; /* -2.7px */
+  color: var(--c-black);
+  /* 글자 둘레의 흰 테두리 — 뒤에 깔린 밑줄을 끊어 y · p 처럼 내려오는 글자를 가리지 않음 (피그마 밑줄 모양) */
+  text-shadow: var(--halo) 0 #fff, calc(var(--halo) * -1) 0 #fff, 0 var(--halo) #fff, 0 calc(var(--halo) * -1) #fff,
+    calc(var(--halo) * 0.7) calc(var(--halo) * 0.7) #fff, calc(var(--halo) * -0.7) calc(var(--halo) * 0.7) #fff,
+    calc(var(--halo) * 0.7) calc(var(--halo) * -0.7) #fff, calc(var(--halo) * -0.7) calc(var(--halo) * -0.7) #fff;
+}
+
+/* 마우스 오버: 밑줄(굵기 5.5% — 피그마)이 글자 뒤에서 왼쪽부터 그어짐 */
 .mx-menu a::after {
   content: "";
   position: absolute;
+  z-index: -1;
   left: 0;
   right: 0;
-  bottom: calc(-2 * var(--px));
-  height: 1px;
+  top: 0.93em; /* 기준선 조금 아래 — 피그마 밑줄 위치 */
+  height: 0.055em;
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.45s var(--ease-out);
+  transition: transform 0.5s var(--ease-out);
 }
 
 .mx-menu a:hover::after,
@@ -89,17 +181,6 @@
 
 .mx-menu a:focus-visible {
   outline: none;
-}
-
-/* ---------- 한 줄 소개 ---------- */
-.mx-foot {
-  position: absolute;
-  left: calc(60 * var(--px));
-  bottom: calc(40 * var(--px));
-  font-family: var(--f-kr);
-  font-size: calc(13 * var(--px));
-  letter-spacing: -0.01em;
-  color: #8a8a86;
 }
 
 /* ---------- 등장 모션 (페이지 진입 시) ---------- */
@@ -113,4 +194,124 @@
   transform: none;
   transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
   transition-delay: calc(var(--i, 0) * 0.12s);
+}
+
+/* 타이틀은 등장 모션 + 색 바뀜을 함께 (색은 지연 없이) */
+.main.is-active .mx-title[data-reveal] {
+  transition: opacity var(--dur-slow) var(--ease-out) calc(var(--i, 0) * 0.12s),
+    transform var(--dur-slow) var(--ease-out) calc(var(--i, 0) * 0.12s), color 0.7s var(--ease-out);
+}
+
+/* 색: 마우스가 나가도 0.5초 유지 후 회색으로 (올릴 때는 바로 검정) */
+.main.is-active .mx-title[data-reveal]:not(:hover) {
+  transition-delay: calc(var(--i, 0) * 0.12s), calc(var(--i, 0) * 0.12s), var(--mx-hold);
+}
+
+
+/* ---------------------------------------------------------
+   화면 전환 — 메인에서 나갈 때
+   - 타이틀: 윗줄(BREADMATICS)부터 차례로 왼쪽 밖으로 빠짐
+   - 메뉴: 누른 옵션이 먼저 검정으로 차오르고(.is-picked — v2/js/main-title.js),
+           세 줄이 위에서부터 오른쪽 밖으로 빠짐
+   시간은 v2/index.html 의 BR.leaveTime(700ms) 안에 끝나게
+   --------------------------------------------------------- */
+.page.main.is-leaving {
+  transform: none;
+}
+
+.page.main.is-leaving::after {
+  opacity: 0;
+}
+
+.main {
+  --mx-leave: cubic-bezier(0.7, 0, 0.84, 0); /* 천천히 출발해 빠르게 빠져나감 */
+}
+
+.main.is-leaving .mx-title__sans,
+.main.is-leaving .mx-title__serif {
+  translate: calc(-100% - 160 * var(--px)) 0;
+  transition: translate 0.55s var(--mx-leave);
+}
+
+.main.is-leaving .mx-title__serif {
+  transition-delay: 0.08s;
+}
+
+/* 누른 옵션: 검정이 왼쪽에서 차오르고 글자는 흰색 (메뉴 카드와 같은 방식) */
+.mx-menu a {
+  background: linear-gradient(var(--c-ink), var(--c-ink)) no-repeat 0 0 / 0% 100%;
+}
+
+.mx-menu a.is-picked {
+  background-size: 100% 100%;
+  color: var(--c-white);
+  text-shadow: none; /* 밑줄 끊는 흰 테두리는 검정 위에서 필요 없음 */
+  transition: background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s var(--ease-out);
+}
+
+.mx-menu a.is-picked::after {
+  opacity: 0;
+}
+
+.main.is-leaving .mx-menu a {
+  translate: 100vw 0;
+  transition: translate 0.45s var(--mx-leave), background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.15s var(--ease-out);
+}
+
+/* 위에서부터 차례로 — 검정이 차오른 뒤 출발 */
+.main.is-leaving .mx-menu a:nth-child(1) { transition-delay: 0.18s, 0s, 0s; }
+.main.is-leaving .mx-menu a:nth-child(2) { transition-delay: 0.22s, 0s, 0s; }
+.main.is-leaving .mx-menu a:nth-child(3) { transition-delay: 0.26s, 0s, 0s; }
+
+/* ---------------------------------------------------------
+   화면 전환 — 메인으로 들어올 때 (나갈 때를 거꾸로)
+   타이틀은 왼쪽 밖에서(윗줄부터), 메뉴 세 줄은 오른쪽 밖에서(위에서부터) 들어옴
+   (다른 페이지의 '아래에서 올라오기 + 흰 막 걷힘'과 기존 위로 떠오르기는 메인에서는 쓰지 않음)
+   --------------------------------------------------------- */
+.page.main.is-entering {
+  transform: none;
+}
+
+.page.main.is-entering::after {
+  opacity: 0;
+}
+
+.page.main.is-active:not(.is-leaving)::after {
+  transition: none;
+}
+
+.main [data-reveal],
+.main.is-active [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.main {
+  --mx-enter: 1.1s cubic-bezier(0.16, 1, 0.3, 1); /* 빠르게 들어와 부드럽게 멈춤 */
+}
+
+.main.is-active .mx-title__sans,
+.main.is-active .mx-title__serif {
+  animation: mx-from-left var(--mx-enter) backwards;
+}
+
+.main.is-active .mx-title__serif {
+  animation-delay: 0.08s;
+}
+
+.main.is-active .mx-menu a {
+  animation: mx-from-right var(--mx-enter) backwards;
+}
+
+.main.is-active .mx-menu a:nth-child(1) { animation-delay: 0.12s; }
+.main.is-active .mx-menu a:nth-child(2) { animation-delay: 0.18s; }
+.main.is-active .mx-menu a:nth-child(3) { animation-delay: 0.24s; }
+
+@keyframes mx-from-left {
+  from { translate: calc(-100% - 160 * var(--px)) 0; }
+}
+
+@keyframes mx-from-right {
+  from { translate: 100vw 0; }
 }

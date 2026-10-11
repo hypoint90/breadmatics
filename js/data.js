@@ -56,6 +56,7 @@ BR.ingredients = [
    id: 주소에 쓰이는 이름 (#/recipe/croissant)
    formula: 수식 (노션 코드블록 그대로 — 줄바꿈·들여쓰기 유지, 빈 줄 = 단계 구분)
    ingredients: 재료 요약 / weight·kcal: 개당 중량·칼로리
+   desc: 한글 상세 레시피 (노션 "빵정식 레시피" 각 페이지의 "상세 레시피" — 2안 레시피 카드 수식 아래)
    --------------------------------------------------------- */
 const lines = (s) => s.replace(/^\n+|\s+$/g, "").split("\n");
 
@@ -64,6 +65,7 @@ BR.breads = [
     id: "croissant", kr: "크루아상", en: "Croissant", img: "assets/img/photo/croissant-01.webp",
     weight: "120g±5g", kcal: "520kcal",
     ingredients: "F · 500g | W · 130ml | M · 130ml | Sg · 55g | S · 10g | B · 40g | Y · 10g | B · 250g | E · 1p",
+    desc: "버터 제외 반죽 재료(강력분 500g, 물 130ml, 우유 130ml, 설탕 55g, 소금 10g, 버터 40g, 이스트 10g)를 섞어 매끈한 반죽을 만들어 사각형으로 정리해 냉장고에서 1시간 휴지시킨다. 그 사이 충전용 버터 250g을 유산지 사이에서 정사각형 판으로 만들어 냉장 보관한다. 반죽으로 버터판을 완전히 감싼 뒤 밀어 3절 접기 후 30분 냉장 휴지를 3회 반복해 결을 만든다. 두께 4mm로 밀어 밑변 10cm·높이 20cm 삼각형 8장으로 재단하고, 밑변에 칼집을 낸 뒤 끝까지 말아 초승달로 성형한다. 28°C·습도 75%에서 90분 2차 발효 후 달걀물을 발라 200°C 오븐에서 15분간 굽는다.",
     formula: lines(`
 → Σ¹ (F₅₀₀·g + W₁₃₀·ml + M₁₃₀·ml + Sg₅₅·g + S₁₀·g + Y₁₀·g) 4' = (m¹)
 → Σ³ ((m¹) + B₄₀·g) 2' = (d)
@@ -85,7 +87,7 @@ BR.breads = [
 → (d⁵) × Y^(28×90') = Δ(d⁶)
    {Δ(d⁶) = 28° / 80%}
 
-→ (d⁶) ∪ (E₁·개) = (d⁶)
+→ (d⁶) ∪ (E₁) = (d⁶)
 
 → (d⁶) × q = (b)
    q = k(200° - 28° / 25mm) 15'
@@ -98,6 +100,7 @@ BR.breads = [
     id: "baguette", kr: "바게트", en: "Baguette", img: "assets/img/photo/crust-01.webp",
     weight: "230g±10g", kcal: "585kcal",
     ingredients: "F · 500g | W · 350ml | Y · 5g | S · 10g",
+    desc: "강력분 500g, 물 350ml, 이스트 5g을 가볍게 섞어 저속으로 짧게 반죽한 뒤 소금 10g을 넣고 마저 섞어 한 덩어리로 만든다. 실온에서 1시간 1차 발효 후 냉장고로 옮겨 12~16시간 저온 발효시켜 풍미를 낸다. 반죽을 250g±5g씩 3덩이로 분할해 럭비공 모양으로 예비 성형 후 20분 벤치타임을 준다. 반죽을 눌러 가스를 뺀 뒤 길쭉한 막대 모양으로 말아 봉합하고, 이음새가 아래로 가게 놓아 27°C에서 40분 2차 발효시킨다. 표면에 사선 칼집을 낸 뒤 스팀 오븐에서 230°C로 25분간 굽는다.",
     formula: lines(`
 → Σ¹ (F₅₀₀·g + W₃₅₀·ml + Y₅·g + S₁₀·g) 5' = (d)
    {(d) = 24° / 865·g}
@@ -126,6 +129,7 @@ BR.breads = [
     id: "pain-au-chocolat", kr: "팽오쇼콜라", en: "Pain au Chocolat", img: "assets/img/photo/pain-au-chocolat-02.webp",
     weight: "149g±6g", kcal: "680kcal",
     ingredients: "F · 500g | W · 130ml | M · 130ml | Sg · 55g | S · 10g | B · 40g | Y · 10g | B · 250g | Dc · 8p(15g/p) | E · 1p",
+    desc: "크루아상과 동일한 방법으로 반죽용 재료(강력분 500g, 물 130ml, 우유 130ml, 설탕 55g, 소금 10g, 버터 40g, 이스트 10g)를 반죽해 냉장 휴지시킨 뒤, 충전용 버터 250g을 감싸 3절 접기를 3회 반복해 라미네이션 반죽을 만들어둔다. 마지막으로 반죽을 두께 약 4mm로 밀어 편 뒤 가로 8cm, 세로 12cm 정도의 직사각형 8장으로 재단한다. 각 반죽 한쪽 끝에 초콜릿 스틱 1개(개당 15g±1g)를 놓고 한 바퀴 말아준 뒤 다시 스틱 1개를 놓고 끝까지 말아 이음새가 아래로 가게 팬에 올린다. 28°C, 습도 75%에서 90분간 2차 발효시킨 뒤 표면에 달걀물을 바르고 200°C로 예열한 오븐에서 15분간 노릇하게 구워낸다.",
     formula: lines(`
 → Σ¹ (F₅₀₀·g + W₁₃₀·ml + M₁₃₀·ml + Sg₅₅·g + S₁₀·g + Y₁₀·g) 4' = (m¹)
 → Σ³ ((m¹) + B₄₀·g) 2' = (d)
@@ -148,7 +152,7 @@ BR.breads = [
 → (d⁶) × Y^(28×90') = Δ(d⁷)
    {Δ(d⁷) = 28° / 80%}
 
-→ (d⁷) ∪ (E₁·개) = (d⁷)
+→ (d⁷) ∪ (E₁) = (d⁷)
 
 → (d⁷) × q = (b)
    q = k(200° - 28° / 25mm) 15'
@@ -160,6 +164,7 @@ BR.breads = [
     id: "scone", kr: "스콘", en: "Scone", img: "assets/img/photo/scone-02.webp",
     weight: "70g±3g", kcal: "255kcal",
     ingredients: "F · 300g | B · 90g | Sg · 50g | Bs · 12g | S · 3g | M · 120ml | E · 1p",
+    desc: "차가운 버터 90g을 깍둑썰어 박력분 300g, 설탕 50g, 베이킹소다 12g, 소금 3g과 함께 손끝으로 비벼 콩알만 한 부슬한 상태로 만든다. 우유 120ml와 달걀 1개를 풀어 넣고 날가루가 겨우 안 보일 정도로만 가볍게 반죽해(과반죽하지 않도록 주의) 두께 2cm로 밀어 편 다음 원형 커터로 8개를 찍어낸다. 200°C로 예열한 오븐에서 15분간 겉이 노릇해질 때까지 구워낸다.",
     formula: lines(`
 → Σ² (F₃₀₀·g + B₉₀·g) 1' = (m¹)
 → Σ¹ ((m¹) + Sg₅₀·g + Bs₁₂·g + S₃·g) 1' = (m²)
@@ -183,6 +188,7 @@ BR.breads = [
     id: "pretzel", kr: "프레첼", en: "Pretzel", img: "assets/img/photo/pretzel-02.webp",
     weight: "96g±4g", kcal: "265kcal",
     ingredients: "F · 500g | W · 280ml | B · 40g | Sg · 20g | S · 10g | Y · 7g | Bs · 50g",
+    desc: "강력분 500g, 물 280ml, 버터 40g, 설탕 20g, 소금 10g, 이스트 7g을 넣고 반죽해 단단하고 매끈한 반죽을 만든다. 랩을 씌워 27°C에서 45분간 1차 발효시킨 뒤 100g±3g씩 8개로 분할해 길게 밀어 막대 모양으로 늘리고 양 끝을 꼬아 프레첼 매듭 모양으로 성형한다. 베이킹소다 50g을 녹인 끓는 물에 반죽을 20초씩 데쳐 표면을 코팅한 뒤, 물기를 뺀 반죽 위에 굵은소금을 뿌린다. 220°C로 예열한 오븐에서 15분간 짙은 갈색이 나도록 구워낸다.",
     formula: lines(`
 → Σ¹ (F₅₀₀·g + W₂₈₀·ml + Sg₂₀·g + S₁₀·g + Y₇·g) 4' = (m¹)
 → Σ⁵ ((m¹) + B₄₀·g) 4' = (d)
@@ -211,6 +217,7 @@ BR.breads = [
     id: "corn-bread", kr: "옥수수빵", en: "Corn Mayo Bread", img: "assets/img/photo/corn-bread-01.webp",
     weight: "82g±3g", kcal: "228kcal",
     ingredients: "F · 300g | M · 170ml | Sg · 30g | S · 5g | B · 20g | Y · 5g | Co · 150g | My · 40g",
+    desc: "강력분 300g, 우유 170ml, 설탕 30g, 소금 5g, 이스트 5g을 넣고 반죽한 다음 버터 20g을 넣어 매끈하게 치댄다. 랩을 씌워 27°C에서 60분간 1차 발효시킨 뒤 8등분해 둥글린다. 옥수수 150g에 마요네즈 40g을 섞어 옥수수마요 충전물을 만들고, 반죽을 눌러 편 뒤 충전물을 넣고 감싸 봉합해 팬에 올린다. 30분간 2차 발효시킨 뒤 190°C로 예열한 오븐에서 15분간 노릇하게 구워낸다.",
     formula: lines(`
 → Σ¹ (F₃₀₀·g + M₁₇₀·ml + Sg₃₀·g + S₅·g + Y₅·g) 3' = (m¹)
 → Σ³ ((m¹) + B₂₀·g) 3' = (d)
@@ -241,6 +248,7 @@ BR.breads = [
     id: "salt-bread", kr: "소금빵", en: "Salt Bread", img: "assets/img/photo/roll-01.webp",
     weight: "61g±3g", kcal: "186kcal",
     ingredients: "F · 300g | W · 165ml | Sg · 20g | S · 5g | Y · 5g | B · 50g | M · trace | S · trace",
+    desc: "강력분 300g, 물 165ml, 설탕 20g, 소금 5g, 이스트 5g을 넣고 반죽해 매끈한 반죽을 만든다. 랩을 씌워 27°C에서 60분간 1차 발효시킨 뒤 8등분해 둥글리고, 각 반죽을 세모꼴로 밀어 편 다음 충전용 버터 50g을 8등분(개당 약 6g±1g)해 밑변에 올리고 끝까지 돌돌 말아 초승달 모양으로 성형한다. 32°C에서 30분간 2차 발효시킨 뒤 표면에 우유를 살짝 발라 윤기를 내고 천일염을 조금씩 뿌린다. 200°C로 예열한 오븐에서 15분간 노릇하게 구워낸다.",
     formula: lines(`
 → Σ¹ (F₃₀₀·g + W₁₆₅·ml + Sg₂₀·g + S₅·g + Y₅·g) 3' = (d)
    {(d) = 26° / 495·g}
@@ -273,6 +281,7 @@ BR.breads = [
     id: "simit", kr: "시미트", en: "Simit", img: "assets/img/photo/simit-01.webp",
     weight: "121g±5g", kcal: "371kcal",
     ingredients: "F · 500g | W · 280ml | Y · 7g | S · 10g | Sg · 15g | Hn · 100g | Sd · 150g",
+    desc: "강력분 500g, 물 280ml, 이스트 7g, 소금 10g, 설탕 15g을 넣고 반죽해 매끈한 반죽을 만든다. 랩을 씌워 27°C에서 50분간 1차 발효시킨 뒤 8등분해 각각 길게 늘려 두 가닥을 꼬은 다음 양 끝을 이어 링 모양으로 성형한다. 꿀 100g을 물에 녹인 꿀물에 반죽을 담갔다 뺀 뒤 참깨 150g을 반죽 전체에 고르게 묻힌다. 220°C로 예열한 오븐에서 15분간 참깨가 노릇하게 구워질 때까지 굽는다.",
     formula: lines(`
 → Σ¹ (F₅₀₀·g + W₂₈₀·ml + Y₇·g + S₁₀·g + Sg₁₅·g) 5' = (d)
    {(d) = 25° / 812·g}
@@ -302,6 +311,7 @@ BR.breads = [
     id: "english-muffin", kr: "잉글리시 머핀", en: "English Muffin", img: "assets/img/photo/stacked-bread-02.webp",
     weight: "82g±3g", kcal: "229kcal",
     ingredients: "F · 400g | M · 250ml | B · 20g | Sg · 15g | S · 6g | Y · 6g | Co · trace",
+    desc: "강력분 400g, 우유 250ml, 버터 20g, 설탕 15g, 소금 6g, 이스트 6g을 한 번에 넣고 반죽해 매끈한 반죽을 만든다. 랩을 씌워 27°C에서 50분간 1차 발효시킨 뒤 70g±3g씩 8개로 분할해 납작하게 둥글리고, 표면에 옥수수가루를 고루 묻힌다. 30분간 2차 발효시킨 다음, 달군 팬에 뚜껑을 덮고 약불에서 앞뒤로 각 8분씩 속까지 익도록 구워낸다(오븐 사용하지 않음).",
     formula: lines(`
 → Σ¹ (F₄₀₀·g + M₂₅₀·ml + Sg₁₅·g + S₆·g + Y₆·g) 3' = (m¹)
 → Σ³ ((m¹) + B₂₀·g) 3' = (d)
@@ -331,6 +341,7 @@ BR.breads = [
     id: "chocolate-cornet", kr: "초코소라빵", en: "Chocolate Cornet", img: "assets/img/photo/dark-croissant-01.webp",
     weight: "99g±4g", kcal: "328kcal",
     ingredients: "F · 300g | M · 150ml | Sg · 40g | S · 4g | B · 30g | E · 1p | Y · 5g | C · 200g | Sg · 20g | Dc · 50g",
+    desc: "버터를 제외한 반죽 재료(강력분 300g, 우유 150ml, 설탕 40g, 소금 4g, 달걀 1개, 이스트 5g)를 저속으로 섞은 뒤 버터 30g을 넣고 중고속으로 치대 매끈한 반죽을 만든다. 랩을 씌워 27°C에서 60분간 1차 발효시킨 뒤 8등분(개당 40g±2g)해 각각 길게 늘려 원뿔형 소라 틀에 나선형으로 감아 성형한다. 35°C에서 40분간 2차 발효시킨 뒤 190°C로 예열한 오븐에서 13분간 노릇하게 구워낸다. 완전히 식으면 생크림 200g에 설탕 20g, 녹인 다크초콜릿 50g을 넣어 단단하게 휘핑한 크림을 짤주머니에 담아 가운데 빈 공간에 짜 넣는다.",
     formula: lines(`
 → Σ¹ (F₃₀₀·g + M₁₅₀·ml + Sg₄₀·g + S₄·g + E₁ + Y₅·g) 4' = (m¹)
 → Σ³ ((m¹) + B₃₀·g) 3' = (d)

@@ -8,12 +8,12 @@
 
 .menu {
   /* 크기 — 피그마 px 기준 */
-  --menu-w: 340; /* 카드 폭 — 좁고 길쭉한 세로 비율 */
-  --menu-row: 44; /* 메뉴 한 줄 높이 (선과 글자 사이 간격) */
+  --menu-w: 420; /* 카드 폭 — 좁고 길쭉한 세로 비율 (340 → 420) */
+  --menu-row: 56; /* 메뉴 한 줄 높이 (선과 글자 사이 간격) */
   --menu-stroke: 1.5px; /* 줄 사이 선 굵기 */
-  --menu-gap: 56; /* 로고 → Main 간격 = 마지막 줄 → 카드 아래 끝 간격 (위아래 같은 여백) */
+  --menu-gap: 74; /* 로고 → Main 간격 = 마지막 줄 → 카드 아래 끝 간격 (위아래 같은 여백) */
   /* 색 */
-  --menu-bg: rgba(244, 245, 245, 0.62); /* 밝은 반투명 회색 유리 — 뒤가 흐리게 비침 */
+  --menu-bg: rgba(232, 233, 233, 0.68); /* 반투명 회색 유리 — 뒤가 흐리게 비침 (244 → 232 로 조금 어둡게) */
   --menu-blur: blur(calc(19.2 * var(--px))) saturate(1.2); /* 24 → 20% 약하게 */
   --menu-rule: rgba(28, 28, 28, 0.42); /* 줄 사이 선 */
   --menu-sub: #7d7d78; /* 작은 제목·보조 글자 */
@@ -52,7 +52,7 @@
   align-items: center;
   gap: calc(12 * var(--px));
   height: calc(36 * var(--px));
-  padding: 0 calc(20 * var(--px));
+  padding: 0 calc(40 * var(--px)); /* 좌우 20 → 40 : 가로 40 넓게 */
   background: var(--menu-bg);
   -webkit-backdrop-filter: var(--menu-blur);
   backdrop-filter: var(--menu-blur);
@@ -70,8 +70,8 @@
 
 .menu__title {
   font-size: calc(14 * var(--px));
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 600; /* 뒤로가기(.back__title)와 같은 설정 */
+  letter-spacing: 0.04em; /* 0.14em → 붙여서 */
   line-height: 1;
 }
 
@@ -129,7 +129,7 @@
 
 /* 종이 — 4AM 패널처럼: 반투명 회색 + 흐림, 아래 끝은 반듯하게 */
 .menu__paper {
-  padding: calc(16 * var(--px)) calc(22 * var(--px)) calc(var(--menu-gap) * var(--px));
+  padding: calc(20 * var(--px)) calc(28 * var(--px)) calc(var(--menu-gap) * var(--px));
   background: var(--menu-bg);
   -webkit-backdrop-filter: var(--menu-blur);
   backdrop-filter: var(--menu-blur);
@@ -144,7 +144,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: calc(40 * var(--px));
+  min-height: calc(50 * var(--px));
   padding-top: calc(4 * var(--px));
 }
 
@@ -166,14 +166,14 @@
   align-items: center;
   gap: calc(3 * var(--px));
   font-family: var(--f-serif);
-  font-size: calc(22 * var(--px));
+  font-size: calc(27 * var(--px));
   letter-spacing: -0.04em;
   line-height: 1;
 }
 
 .menu__brand em {
   font-style: italic;
-  font-size: calc(14 * var(--px));
+  font-size: calc(17 * var(--px));
   letter-spacing: -0.01em;
   color: #5c5c58;
 }
@@ -183,10 +183,20 @@
   font-weight: 700;
 }
 
+/* 타이틀을 누르면 메인으로 — 마우스를 올리면 살짝 흐려짐 */
+.menu__brand {
+  color: var(--c-ink);
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.menu__brand:hover {
+  opacity: 0.55;
+}
+
 /* 묶음 제목 (Pages) — 가운데, 작은 보통 글자 */
 .menu__label {
   margin: calc(30 * var(--px)) 0 calc(12 * var(--px));
-  font-size: calc(13 * var(--px));
+  font-size: calc(16 * var(--px));
   letter-spacing: -0.01em;
   text-align: center;
   color: #3e3e3b;
@@ -201,8 +211,8 @@
   height: calc(var(--menu-row) * var(--px));
   padding: 0 calc(4 * var(--px)) 0 calc(6 * var(--px));
   border-top: var(--menu-stroke) solid var(--menu-rule);
-  font-size: calc(15 * var(--px));
-  font-weight: 500;
+  font-size: calc(18.5 * var(--px));
+  font-weight: 600; /* 500 에서 한 단계 굵게 */
   letter-spacing: -0.02em;
   color: var(--c-ink);
   /* 검정 띠: 왼쪽에서 오른쪽으로 차오름 (메인 메뉴 클릭 애니메이션과 같은 방식) */
@@ -243,7 +253,7 @@
   position: relative;
   flex: none;
   width: calc(15 * var(--px));
-  height: calc(15 * var(--px));
+  height: calc(17 * var(--px));
   border: 1px solid rgba(28, 28, 28, 0.55);
   border-radius: 50%;
 }
@@ -312,15 +322,15 @@
 
 .menu__row--sub {
   padding-left: calc(28 * var(--px));
-  height: calc(36 * var(--px));
-  font-size: calc(13 * var(--px));
-  font-weight: 500;
+  height: calc(45 * var(--px));
+  font-size: calc(16 * var(--px));
+  font-weight: 600; /* 500 에서 한 단계 굵게 */
   color: var(--c-ink); /* 하위 항목도 같은 검정 */
 }
 
 .menu__row--sub .menu__radio {
   width: calc(12 * var(--px));
-  height: calc(12 * var(--px));
+  height: calc(14 * var(--px));
   margin-right: calc(1.5 * var(--px));
 }
 
@@ -328,11 +338,12 @@
   color: var(--c-ink);
 }
 
-/* 영수증이 내려올 때 줄들이 살짝 늦게 따라 내려옴 */
+/* 영수증이 내려올 때 줄들이 살짝 늦게 따라 내려옴
+   올라갈 때는 내용이 그대로 붙은 채 카드와 함께 올라가고, 다 올라간 뒤(0.4초)에 다음 열림을 위해 몰래 되돌려 둠 */
 .menu__paper > * {
   transform: translateY(calc(-10 * var(--px)));
   opacity: 0;
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  transition: opacity 0s linear 0.4s, transform 0s linear 0.4s;
 }
 
 .menu.is-open .menu__paper > * {
@@ -354,7 +365,7 @@
   margin-top: calc(28 * var(--px));
   padding: 0 calc(4 * var(--px)) 0 calc(6 * var(--px));
   font-family: var(--f-kr);
-  font-size: calc(13 * var(--px));
+  font-size: calc(16 * var(--px));
   letter-spacing: -0.02em;
   color: var(--menu-sub);
   transition: color var(--dur-fast) var(--ease-out);
@@ -383,7 +394,7 @@
   position: relative;
   display: inline-block;
   width: calc(9 * var(--px));
-  height: calc(9 * var(--px));
+  height: calc(10 * var(--px));
   margin-left: calc(8 * var(--px));
   vertical-align: middle;
   translate: 0 -8%;
@@ -424,11 +435,57 @@
 
 /* Main 줄은 카드의 직접 자식이라 '줄들이 따라 내려오는' 전환이 덮어씀 → 차오름 전환을 함께 지정 */
 .menu__paper > .menu__row {
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), background-size 0.6s var(--menu-fill),
+  transition: opacity 0s linear 0.4s, transform 0s linear 0.4s, background-size 0.6s var(--menu-fill),
     color 0.2s var(--ease-out) 0.05s;
 }
 
 .menu.is-open .menu__paper > .menu__row {
   transition: opacity 0.5s var(--ease-out) 60ms, transform 0.6s var(--menu-drop) 60ms, background-size 0.6s var(--menu-fill),
     color 0.2s var(--ease-out) 0.05s;
+}
+
+/* =========================================================
+   뒤로가기 — 오른쪽 위 (상자 없이 글자만 · 메뉴 탭과 같은 높이, 오른쪽 끝에서 60)
+   메인에서는 위로 올라가 숨음. 동작은 v2/js/back.js
+   ========================================================= */
+.back {
+  position: fixed;
+  z-index: 110;
+  top: calc(20 * var(--px));
+  right: calc(60 * var(--px));
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--px));
+  height: calc(36 * var(--px));
+  /* 상자가 없어서 뒤가 검정이면 안 보임 → 뒤 색에 맞춰 자동 반전 (흰 바탕 = 검정 글자, 검정 바탕 = 흰 글자) */
+  color: #fff;
+  mix-blend-mode: difference;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s var(--ease-out);
+}
+
+.back__title {
+  font-size: calc(14 * var(--px));
+  font-weight: 600; /* 메뉴 탭(.menu__title)과 같은 설정 */
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.back__icon {
+  display: flex;
+}
+
+.back__icon .arrow {
+  transition: transform 0.4s var(--ease-out);
+}
+
+/* 마우스 오버: 화살표가 왼쪽으로 살짝 */
+.back:hover .back__icon .arrow {
+  transform: translateX(calc(-4 * var(--px))) scaleX(-1);
+}
+
+/* 메인에서는 숨김 (위로 올라가며 사라짐) */
+body[data-page="main"] .back {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(-80 * var(--px)));
 }

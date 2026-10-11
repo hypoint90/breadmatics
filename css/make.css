@@ -674,6 +674,16 @@
   color: #80807c;
 }
 
+/* 기록된 지 얼마나 됐는지 (3분 전) — 이름 옆 작은 회색 */
+.mk-col__ago {
+  margin-left: calc(8 * var(--px));
+  font-size: calc(11 * var(--px));
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #8a8a86;
+  white-space: nowrap;
+}
+
 .mk-col__meta {
   font-size: calc(11 * var(--px));
   color: #80807c;

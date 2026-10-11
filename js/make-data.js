@@ -16,7 +16,7 @@ window.BBANG_MAKE = {
     "Ba": "베이컨", "Hm": "햄", "Sa": "소시지",
     "Wn": "호두", "Am": "아몬드", "Be": "베리류", "Fg": "무화과",
     "Mc": "말차", "Ci": "계피", "Cf": "커피",
-    "c": "커스터드", "Cc": "크림치즈", "Sd": "씨", "C": "생크림", "Hn": "꿀"
+    "Ct": "커스터드", "Cc": "크림치즈", "Sd": "씨", "C": "생크림", "Hn": "꿀"
   },
   // ml로 쓰는 재료 (나머지는 g)
   "liquids": ["W", "M"],
@@ -115,7 +115,7 @@ window.BBANG_MAKE = {
   },
 
   // 8 굽기 전 추가하기 (per 대비 %)
-  "preFill": { "pct": 50, "items": ["An", "c", "Cc", "Mz", "Sa"], "pieces": ["Sa"] },
+  "preFill": { "pct": 50, "items": ["An", "Ct", "Cc", "Mz", "Sa"], "pieces": ["Sa"] },
   "preTop":  { "pct": 15, "items": ["Ch", "Sd", "Am", "Sg", "Dc"], "labels": { "Dc": "초콜릿" } },
 
   // 9 굽기 / 튀기기
@@ -142,7 +142,7 @@ window.BBANG_MAKE = {
   },
 
   // 10 굽고 난 후 추가하기 (per 대비 %). 속 합계 상한 60% (소시지 제외)
-  "postFill": { "pct": 40, "items": ["C", "c"] },
+  "postFill": { "pct": 40, "items": ["C", "Ct"] },
   "postTop":  { "pct": 20, "items": ["Sg", "Hn", "Dc", "C"], "labels": { "Sg": "설탕 코팅", "Dc": "초콜릿 코팅" } },
   "fillCap": 60,
 

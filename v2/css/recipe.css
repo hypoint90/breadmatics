@@ -1,401 +1,154 @@
 /* =========================================================
-   recipe.css — Bread Recipe
-   1) 목록(세로 캐러셀)  피그마: 레시피 (팽오쇼콜라 / 스콘)
-   2) 상세               피그마: 레시피 (크루아상 상세)
+   recipe.css (2안) — Bread Recipe   피그마: 레시피 (2304:770)
+   - 왼쪽: 빵 사진 세로 줄 (.rx-thumb, 자리 = data-slot)
+   - 사진 옆: 이름 · 재료 (.rx-info)
+   - 오른쪽: 회색 유리 카드에 수식 (.rx-card, 자리 = data-slot)
+     가운데 카드에 마우스를 올리면 수식 글자가 부드럽게 커짐
+   세로 위치는 화면 가운데 기준(top: 50% ± 피그마 값)이라 화면 비율이 달라도 가운데에 모임
    ========================================================= */
 
+.recipe {
+  --rx-move: 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* 넘길 때 사진·카드가 움직이는 시간과 곡선 */
+}
+
+/* 왼쪽 묶음(선·사진 줄·이름)은 스테이지 밖, 페이지(= 화면) 왼쪽 끝 기준
+   → 메뉴 탭·카드(화면 왼쪽에서 60)와 화면 비율에 상관없이 같은 선 */
+
 /* ---------------------------------------------------------
-   1) 목록
+   왼쪽: 빵 사진 세로 줄
    --------------------------------------------------------- */
-.recipe .stage {
-  overflow: hidden;
-}
-
-/* 양옆 흐르는 수식 */
-.r-formula {
+.rx-thumbs {
   position: absolute;
+  left: calc(60 * var(--px)); /* 메뉴 탭·카드 왼쪽 끝과 같은 선 (피그마 36) */
   top: 0;
   bottom: 0;
-  width: calc(483 * var(--px));
+  width: calc(213 * var(--px));
   overflow: hidden;
-  padding: 0 calc(10 * var(--px));
-  font-family: var(--f-formula);
-  font-size: calc(52 * var(--px));
-  line-height: 1.3;
-  letter-spacing: -0.03em;
-  color: var(--c-black);
+  z-index: 3;
 }
 
-.r-formula--left {
+.rx-thumb {
+  /* 자리마다 아래 값만 바뀜 — 피그마 좌표 (가운데 사진 중심 = 화면 가운데 - 6) */
+  --y: -148; /* 화면 가운데에서 위 끝까지 */
+  --w: 213;
+  --h: 284;
+  --veil: 0; /* 흰 막 진하기 */
+
+  position: absolute;
   left: 0;
-}
-
-.r-formula--right {
-  right: 0;
-  text-align: right;
-}
-
-.r-formula__track {
-  white-space: pre-wrap;
-  animation: formula-drift 60s linear infinite;
-}
-
-.r-formula--right .r-formula__track {
-  animation-direction: reverse;
-}
-
-/* 같은 수식을 2번 넣어두고 절반만큼 올려서 끊김 없이 반복 */
-@keyframes formula-drift {
-  to {
-    transform: translateY(-50%);
-  }
-}
-
-/* 수식 흐림 — 가운데(빵 쪽)로 갈수록 흐려짐
-   단계형 블러(progressive blur): 블러 세기가 다른 막 5장을 구간별로 겹쳐서
-   '선명 → 조금 흐림 → 많이 흐림'이 자연스럽게 이어지게 함
-   (막 1장 + 그라데이션 마스크로 하면 선명한 글자와 흐린 글자가 겹쳐 보임)
-   --blur-max: 가장 흐린 쪽 세기 / 각 막의 구간(%)은 아래 nth-child 에서 조정 */
-.r-blur {
-  --blur-max: 8;
-  --dir: to right;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.r-blur--left {
-  left: 0;
-  width: calc(597 * var(--px));
-}
-
-.r-blur--right {
-  --dir: to left;
-  right: 0;
-  width: calc(601 * var(--px));
-}
-
-.r-blur i {
-  position: absolute;
-  inset: 0;
-  -webkit-backdrop-filter: blur(calc(var(--b) * var(--px)));
-  backdrop-filter: blur(calc(var(--b) * var(--px)));
-  -webkit-mask-image: linear-gradient(var(--dir), transparent var(--from), #000 var(--to));
-  mask-image: linear-gradient(var(--dir), transparent var(--from), #000 var(--to));
-}
-
-/* 막마다 세기(--b)와 시작~끝 구간 — 뒤로 갈수록 더 세고, 더 안쪽(빵 쪽)에서 시작 */
-.r-blur i:nth-child(1) { --b: calc(var(--blur-max) / 16); --from: 30%; --to: 45%; }
-.r-blur i:nth-child(2) { --b: calc(var(--blur-max) / 8);  --from: 40%; --to: 55%; }
-.r-blur i:nth-child(3) { --b: calc(var(--blur-max) / 4);  --from: 50%; --to: 65%; }
-.r-blur i:nth-child(4) { --b: calc(var(--blur-max) / 2);  --from: 60%; --to: 75%; }
-.r-blur i:nth-child(5) { --b: var(--blur-max);            --from: 70%; --to: 88%; }
-
-/* 가운데 빵 이미지 스택 */
-.r-stack {
-  position: absolute;
-  left: calc(597 * var(--px));
-  top: calc(25 * var(--px)); /* 2안: 페이지가 920 으로 길어져 카드 줄을 가운데로 (870 기준 좌표 유지) */
-  width: calc(242 * var(--px));
-  height: calc(870 * var(--px));
-}
-
-.r-card {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(176 * var(--px));
-  height: calc(234 * var(--px));
+  top: calc(50% + var(--y) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
   overflow: hidden;
-  border: 0;
-  padding: 0;
-  transform: translate(-50%, -50%);
-  transition: top var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out),
-    height var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out),
-    box-shadow var(--dur-slow) var(--ease-out);
+  cursor: pointer;
+  transition: top var(--rx-move), width var(--rx-move), height var(--rx-move), opacity 0.5s var(--ease-out);
 }
 
-.r-card img {
+.rx-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
 }
 
-/* 흰 막 (앞뒤 빵을 흐릿하게) */
-.r-card::after {
+/* 흰 막 (위아래 사진을 흐릿하게) */
+.rx-thumb::after {
   content: "";
   position: absolute;
   inset: 0;
   background: #fff;
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-out);
+  opacity: var(--veil);
+  transition: opacity 0.5s var(--ease-out);
 }
 
-/* 슬롯 위치 — 피그마 좌표 기준 (페이지 높이 870 중 위치) */
-.r-card[data-slot="-2"] {
-  top: calc((62 + 86.5) * var(--px));
-  width: calc(130 * var(--px));
-  height: calc(173 * var(--px));
-  z-index: 1;
-}
-
-.r-card[data-slot="-1"] {
-  top: calc((147 + 117) * var(--px));
+/* 가운데: 크게 */
+.rx-thumb[data-slot="0"] {
   z-index: 2;
+  cursor: default;
 }
 
-.r-card[data-slot="0"] {
-  top: calc(50% - 6 * var(--px));
-  width: calc(242 * var(--px));
-  height: calc(322 * var(--px));
-  z-index: 3;
-  box-shadow: 0 0 calc(6.5 * var(--px)) calc(3 * var(--px)) rgba(25, 26, 27, 0.15);
-  cursor: zoom-in;
+/* 바로 위아래: 116 × 154, 흰 막 50% (피그마 30% 보다 흐리게) */
+.rx-thumb[data-slot="-1"] { --y: -308; --w: 116; --h: 154; --veil: 0.5; }
+.rx-thumb[data-slot="1"]  { --y: 142;  --w: 116; --h: 154; --veil: 0.5; }
+
+/* 가장 바깥: 102 × 136, 흰 막 75% (피그마 60% 보다 흐리게) */
+.rx-thumb[data-slot="-2"] { --y: -450; --w: 102; --h: 136; --veil: 0.75; }
+.rx-thumb[data-slot="2"]  { --y: 301;  --w: 102; --h: 136; --veil: 0.75; }
+
+/* 화면 밖 대기 */
+.rx-thumb[data-slot="hide-up"]   { --y: -600; --w: 102; --h: 136; --veil: 0.75; opacity: 0; pointer-events: none; }
+.rx-thumb[data-slot="hide-down"] { --y: 460;  --w: 102; --h: 136; --veil: 0.75; opacity: 0; pointer-events: none; }
+
+/* 위아래 사진에 마우스: 흰 막이 걷히며 살짝 확대 */
+.rx-thumb:not([data-slot="0"]):hover::after {
+  opacity: 0.1;
 }
 
-.r-card[data-slot="1"] {
-  top: calc((477 + 117) * var(--px));
-  z-index: 2;
-}
-
-.r-card[data-slot="2"] {
-  top: calc((634 + 86.5) * var(--px));
-  width: calc(130 * var(--px));
-  height: calc(173 * var(--px));
-  z-index: 1;
-}
-
-/* 뒤쪽 카드 흰 막(딤드) 진하기 — 바로 옆 / 가장 바깥 (피그마 30% / 60% 에서 +20%) */
-.r-card[data-slot="-1"]::after,
-.r-card[data-slot="1"]::after {
-  opacity: 0.5;
-}
-
-.r-card[data-slot="-2"]::after,
-.r-card[data-slot="2"]::after {
-  opacity: 0.8;
-}
-
-/* 화면 밖 대기 슬롯 */
-.r-card[data-slot="hide-up"],
-.r-card[data-slot="hide-down"] {
-  width: calc(100 * var(--px));
-  height: calc(133 * var(--px));
-  opacity: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.r-card[data-slot="hide-up"] {
-  top: calc(-80 * var(--px));
-}
-
-.r-card[data-slot="hide-down"] {
-  top: calc(100% + 80 * var(--px));
-}
-
-.r-card[data-slot="0"]:hover img {
+.rx-thumb:not([data-slot="0"]):hover img {
   transform: scale(1.04);
 }
 
-.r-card img {
-  transition: transform var(--dur-slow) var(--ease-out);
-}
-
-/* 가운데 카드에 마우스를 올리면 아래에서 '레시피 보러가기' 띠가 올라옴 */
-.r-card__go {
+/* ---------------------------------------------------------
+   사진 줄 왼쪽: 얇은 세로선 + 지금 위치 표시(짧은 가로선)
+   높이는 가운데 사진과 같음. --p(0~1) = 지금 빵 순서 (v2/js/recipe.js)
+   --------------------------------------------------------- */
+.rx-bar {
+  --p: 0;
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1; /* 흰 막(::after) 위 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(8 * var(--px));
-  height: calc(40 * var(--px));
-  /* 아주 옅은 흰 막 + 뒤 사진 흐림 (유리 느낌) */
-  background: rgba(255, 255, 255, 0.22);
-  -webkit-backdrop-filter: blur(calc(12 * var(--px)));
-  backdrop-filter: blur(calc(12 * var(--px)));
-  border-top: 0.5px solid rgba(255, 255, 255, 0.25);
-  color: var(--c-ink);
-  font-family: var(--f-kr);
-  font-weight: 500;
-  font-size: calc(14 * var(--px));
-  letter-spacing: -0.03em;
-  transform: translateY(101%);
-  transition: transform 0.5s var(--ease-out);
+  left: calc(36 * var(--px)); /* 사진 왼쪽 끝에서 24 바깥 */
+  top: calc(50% - 148 * var(--px));
+  height: calc(284 * var(--px));
+  width: 1px;
+  background: rgba(28, 28, 28, 0.126); /* 0.18 에서 30% 밝게 */
+  z-index: 3;
 }
 
-/* 사진 아래쪽이 어두운 카드는 글자를 흰색으로 (js/recipe.js 에서 밝기를 재서 is-dark 붙임) */
-.r-card.is-dark .r-card__go {
-  color: var(--c-white);
-}
-
-.r-card__go .arrow {
-  width: calc(16 * var(--px));
-  transition: transform 0.5s var(--ease-out);
-}
-
-.r-card[data-slot="0"]:hover .r-card__go,
-.r-card[data-slot="0"]:focus-visible .r-card__go {
-  transform: none;
-}
-
-.r-card[data-slot="0"]:hover .r-card__go .arrow {
-  transform: translateX(calc(3 * var(--px)));
-}
-
-/* 빵 이름 (좌: 영문 / 우: 한글) */
-.r-names {
+.rx-bar__tick {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: calc(799 * var(--px));
-  height: calc(135 * var(--px));
-  display: flex;
-  justify-content: space-between;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 4;
+  top: calc(var(--p) * 100%);
+  width: calc(8 * var(--px));
+  height: 1.5px;
+  background: var(--c-ink);
+  translate: -50% -50%;
+  transition: top var(--rx-move);
 }
 
-.r-name {
-  display: flex;
-  flex-direction: column;
-  gap: calc(5 * var(--px));
-  width: calc(250 * var(--px));
+/* ---------------------------------------------------------
+   사진 옆: 이름 · 재료
+   --------------------------------------------------------- */
+.rx-info {
+  position: absolute;
+  left: calc(284 * var(--px)); /* 사진 오른쪽 끝 + 11 (피그마 260 에서 사진 줄과 같이 이동) */
+  top: calc(50% - 148 * var(--px)); /* 가운데 사진 위 끝과 맞춤 */
+  width: calc(201 * var(--px));
+  z-index: 2; /* 사진 줄(3) 아래 — 왼쪽에서 나올 때 사진 뒤에서 빠져나오듯 */
+  color: var(--c-black);
 }
 
-.r-name--en {
-  align-items: flex-end;
-  text-align: right;
-}
-
-.r-name__title {
-  font-size: calc(32 * var(--px));
+.rx-info__en {
+  width: calc(176 * var(--px));
+  font-family: var(--f-sans);
   font-weight: 700;
-  line-height: 1.2;
+  font-size: calc(24 * var(--px));
+  line-height: 1.1;
   letter-spacing: -0.03em;
   text-transform: uppercase;
 }
 
-.r-name--kr .r-name__title {
+.rx-info__kr {
   font-family: var(--f-kr);
-}
-
-.r-name__meta {
-  font-family: var(--f-kr);
-  font-weight: 500;
-  font-size: calc(12 * var(--px));
+  font-weight: 700;
+  font-size: calc(24 * var(--px));
   line-height: 1.5;
-  letter-spacing: -0.02em;
-  color: var(--c-ink);
-  white-space: pre-line;
-}
-
-/* 이름 전환 모션 */
-.r-name > * {
-  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
-}
-
-.r-names.is-changing .r-name > * {
-  opacity: 0;
-  transform: translateY(calc(10 * var(--px)));
-}
-
-/* 진행 표시 (01 / 10) */
-.r-counter {
-  position: absolute;
-  right: calc(24 * var(--px));
-  bottom: calc(20 * var(--px));
-  font-family: var(--f-serif);
-  font-size: calc(13 * var(--px));
-  z-index: 5;
-}
-
-/* ---------------------------------------------------------
-   2) 상세
-   --------------------------------------------------------- */
-.detail .stage {
-  display: flex;
-}
-
-.d-side {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(30 * var(--px));
-  width: calc(321 * var(--px));
-  height: 100%;
-  padding: calc(84 * var(--px)) calc(60 * var(--px)) calc(30 * var(--px)); /* 위: 메뉴 탭 아래 */
-  border-left: 0.5px solid var(--c-rule);
-  border-right: 0.5px solid var(--c-rule);
-  overflow-y: auto;
-}
-
-/* 뒤로 돌아가기 버튼 (피그마: Component 10) */
-.d-back {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(6 * var(--px));
-  width: calc(200 * var(--px));
-  height: calc(35 * var(--px));
-  padding-right: calc(10 * var(--px));
-  border: 1px solid var(--c-ink);
-  background: var(--c-white);
-  font-size: calc(18 * var(--px));
-  letter-spacing: -0.035em;
-  line-height: 1;
-  color: var(--c-ink);
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
-}
-
-.d-back:hover {
-  background: var(--c-ink);
-  color: var(--c-white);
-}
-
-.d-info {
-  display: flex;
-  flex-direction: column;
-  gap: calc(10 * var(--px));
-  width: calc(200 * var(--px));
-}
-
-.d-info__names {
-  display: flex;
-  flex-direction: column;
-  gap: calc(3 * var(--px));
-  font-family: var(--f-kr);
-  font-size: calc(14 * var(--px));
-  line-height: 1.2;
   letter-spacing: -0.03em;
 }
 
-.d-info__kr {
-  font-weight: 700;
-}
-
-.d-info__en {
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.d-info__img {
-  width: 100%;
-  aspect-ratio: 1856 / 2464;
-  object-fit: cover;
-}
-
-.d-info__meta {
+.rx-info__meta {
   display: flex;
   flex-direction: column;
   gap: calc(8 * var(--px));
+  margin-top: calc(16 * var(--px));
   font-family: var(--f-kr);
   font-weight: 500;
   font-size: calc(12 * var(--px));
@@ -404,36 +157,366 @@
   color: var(--c-ink);
 }
 
-.d-formula {
-  flex: 1;
-  height: 100%;
-  overflow-y: auto;
-  padding: calc(64 * var(--px)) calc(60 * var(--px)) calc(80 * var(--px));
-  font-family: var(--f-formula);
-  font-size: calc(58 * var(--px));
-  line-height: 1.3;
-  letter-spacing: -0.03em;
-  white-space: pre-wrap;
+.rx-info__ing {
+  line-height: 1.4;
 }
 
-/* 수식 줄 단위 등장 */
-.d-formula__line {
+/* 바뀔 때: 왼쪽으로 빠지며 사라졌다가 → 새 내용이 왼쪽에서 미끄러져 나옴
+   맨 위(영문 이름)부터 아래(칼로리)까지 --i 순서대로 짧은 간격(--rx-stagger)을 두고 차례로 */
+.rx-info {
+  --rx-stagger: 60ms; /* 줄 사이 간격 */
+  --rx-from: calc(-28 * var(--px)); /* 왼쪽에서 출발하는 거리 */
+}
+
+.rx-info__en,
+.rx-info__kr,
+.rx-info__meta > p {
+  transition: opacity 0.5s var(--ease-out), transform 0.7s var(--ease-out);
+  transition-delay: calc(var(--i) * var(--rx-stagger));
+}
+
+.rx-info__en { --i: 0; }
+.rx-info__kr { --i: 1; }
+.rx-info__ing { --i: 2; }
+.rx-info__weight { --i: 3; }
+.rx-info__kcal { --i: 4; }
+
+/* 사라질 때: 한꺼번에 빠르게 왼쪽으로 */
+.rx-info.is-changing .rx-info__en,
+.rx-info.is-changing .rx-info__kr,
+.rx-info.is-changing .rx-info__meta > p {
+  opacity: 0;
+  transform: translateX(var(--rx-from));
+  transition-duration: 0.2s;
+  transition-delay: 0s;
+}
+
+/* ---------------------------------------------------------
+   오른쪽: 수식 카드
+   --------------------------------------------------------- */
+.rx-cards {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.rx-card {
+  /* 자리마다 아래 값만 바뀜 — 피그마 좌표 */
+  --x: 506; /* 왼쪽 */
+  --y: -415; /* 화면 가운데에서 위 끝까지 */
+  --w: 812;
+  --h: 830;
+
+  position: absolute;
+  left: calc(var(--x) * var(--px));
+  top: calc(50% + var(--y) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  transition: left var(--rx-move), top var(--rx-move), width var(--rx-move), height var(--rx-move),
+    opacity 0.6s var(--ease-out);
+}
+
+/* 가운데 카드: 앞뒤 카드 위에 */
+.rx-card[data-slot="0"] {
+  z-index: 2;
+}
+
+/* 앞(위) · 뒤(아래) 카드: 607 × 620, 끝만 살짝 보임 — 누르면 그 빵으로 */
+.rx-card[data-slot="-1"],
+.rx-card[data-slot="1"] {
+  --x: 449;
+  --w: 607;
+  --h: 620;
+  cursor: pointer;
+}
+
+.rx-card[data-slot="-1"] { --y: -959; }
+.rx-card[data-slot="1"]  { --y: 289; }
+
+/* 화면 밖 대기 */
+.rx-card[data-slot="hide-up"],
+.rx-card[data-slot="hide-down"] {
+  --x: 449;
+  --w: 607;
+  --h: 620;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rx-card[data-slot="hide-up"]   { --y: -1500; }
+.rx-card[data-slot="hide-down"] { --y: 900; }
+
+/* 배경 사진: 가운데 카드에서만 흐리게 비침 */
+.rx-card__bg {
+  position: absolute;
+  left: 7.19%;
+  top: 8.17%;
+  width: 85.67%;
+  height: 83.69%;
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(calc(24 * var(--px)));
+  transition: opacity 0.8s var(--ease-out);
+}
+
+.rx-card[data-slot="0"] .rx-card__bg {
+  opacity: 0.3;
+}
+
+/* 회색 유리 */
+.rx-card__glass {
+  position: absolute;
+  inset: 0;
+  background: rgba(217, 217, 217, 0.14);
+  -webkit-backdrop-filter: blur(calc(15 * var(--px)));
+  backdrop-filter: blur(calc(15 * var(--px)));
+  border-right: 1px solid rgba(221, 221, 221, 0.3);
+  border-bottom: 1px solid rgba(221, 221, 221, 0.3);
+}
+
+/* 가볍게: 앞뒤(위아래) 카드는 뒤가 흰 바탕뿐이라 흐림이 보이지 않음 → 흐림 계산을 끔 (보이는 모습은 같음)
+   흐림은 가운데 카드에만 */
+.rx-card:not([data-slot="0"]) .rx-card__glass {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* 수식이 카드보다 길어지면(글자가 커졌을 때) 휠로 내려 볼 수 있게 — 스크롤바는 숨김 */
+.rx-card__scroll {
+  position: absolute;
+  inset: 0;
+  padding: calc(25 * var(--px));
+  overflow: hidden auto;
+  scrollbar-width: none;
+}
+
+.rx-card__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 카드 글자 (피그마: Component 11)
+   - 'Recipe' 제목: 14px 고정
+   - 수식: 기본 14px · 폭 207px → 마우스를 올리면 50px (피그마 42px 보다 조금 크게) · 카드 안쪽 폭 전체(762px)
+   크기는 --rx-fs, 폭은 --rx-w 만 바꾸면 됨 (둘 다 피그마 px) */
+.rx-card__text {
+  font-family: var(--f-sans);
+  font-weight: 500; /* 호버 전 500 → 호버하면 600 (아래 ★) */
+  line-height: 1.3;
+  color: var(--c-black);
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.rx-card__label {
+  letter-spacing: -0.03em; /* -0.42px */
+  width: calc(207 * var(--px));
+  margin-bottom: calc(8 * var(--px));
+  font-size: calc(14 * var(--px));
+}
+
+.rx-card__formula {
+  --rx-fs: 14;
+  --rx-w: 207;
+  letter-spacing: -0.03em; /* 14px → -0.42 / 50px → -1.5 (글자 크기에 맞춰 같이 변함) */
+  width: calc(var(--rx-w) * var(--px));
+  font-size: calc(var(--rx-fs) * var(--px));
+  transition: font-size 0.8s var(--ease-out), width 0.8s var(--ease-out);
+}
+
+.rx-card__line {
   display: block;
 }
 
-/* 노션 수식의 빈 줄 = 단계 사이 간격 */
-.d-formula__line:empty {
-  height: 0.45em;
+/* 한글 상세 레시피 (노션) — 수식 아래. 피그마: 12px · 행간 1.5 · 폭 207, 수식과 52 간격
+   서체는 숫자·영문까지 전부 Pretendard
+   마우스를 올려 수식이 커지면 흐려지며 사라짐 (수식만 보이게) */
+.rx-card__desc {
+  width: calc(207 * var(--px));
+  margin-top: calc(52 * var(--px));
+  font-family: var(--f-kr);
+  font-size: calc(12 * var(--px));
+  font-weight: 400; /* 피그마와 같은 Regular */
+  line-height: 1.5;
+  letter-spacing: -0.03em;
+  word-break: keep-all; /* 한글은 단어 단위로 줄바꿈 */
+  max-height: 2000px;
+  overflow: hidden;
+  transition: opacity 0.6s var(--ease-out) 0.15s;
 }
 
-.detail.is-active .d-formula__line {
-  animation: line-in var(--dur-slow) var(--ease-out) backwards;
-  animation-delay: calc(var(--i) * 60ms + 0.15s);
+/* ※ 임시로 숨김 — 다시 보이게 하려면 이 규칙만 지우면 됨 (내용은 js/data.js 의 desc 에 그대로 있음) */
+.rx-card__desc {
+  display: none;
 }
 
-@keyframes line-in {
-  from {
-    opacity: 0;
-    transform: translateY(calc(24 * var(--px)));
-  }
+/* 사라진 뒤(0.25초)에는 높이도 0 — 자동 스크롤이 빈 자리까지 내려가지 않게 */
+.rx-card[data-slot="0"]:hover .rx-card__desc {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  transition: opacity 0.25s var(--ease-out), max-height 0s linear 0.25s, margin-top 0s linear 0.25s;
+}
+
+/* 앞뒤 카드 글자는 70% */
+.rx-card:not([data-slot="0"]) .rx-card__text {
+  opacity: 0.7;
+}
+
+/* ★ 가운데 카드에 마우스를 올리면 수식이 부드럽게 커짐 (14 → 50px, 폭은 카드 안쪽 전체)
+   카드보다 길어지면 아래는 잘리고, 휠로 내려 볼 수 있음 */
+.rx-card[data-slot="0"]:hover .rx-card__label {
+  font-weight: 600; /* 호버하면 Recipe 제목 600 */
+}
+
+.rx-card[data-slot="0"]:hover .rx-card__formula {
+  font-weight: 600; /* 호버하면 수식도 600 */
+  --rx-fs: 50;
+  --rx-w: 762; /* 812 - 좌우 여백 25 × 2 */
+}
+
+/* ---------- 마우스 근처 글자만 서체 바꾸기 (v2/js/recipe.js — SERIF_RADIUS) ----------
+   Baskervville 이탤릭 → 그 서체에 없는 수학 기호·첨자(→ Σ ₅ ⁵ × ∪ Δ θ 등)는 Libertinus Math → 한글은 Pretendard
+   font-synthesis: none = 이탤릭·굵은체가 없는 기호(Libertinus Math 는 보통 굵기 하나뿐)·한글을 억지로 기울이거나 굵게 만들지 않음
+   (억지 굵게 만들면 Σ 같은 기호 속이 비어 보이는 문제가 생김) */
+.rx-ch.is-serif {
+  font-family: "Baskervville", "BR Math Ops", "Libertinus Math", var(--f-kr);
+  font-style: italic;
+  font-synthesis: none;
+  animation: rx-ch-in 0.35s var(--ease-out);
+}
+
+/* 원래 서체로 돌아올 때 */
+.rx-ch.is-plain {
+  animation: rx-ch-out 0.35s var(--ease-out);
+}
+
+/* 바뀌는 순간 살짝 흐려졌다 선명해짐 (들어올 때·나갈 때 이름이 달라야 매번 다시 재생됨) */
+@keyframes rx-ch-in {
+  from { opacity: 0.25; }
+}
+
+@keyframes rx-ch-out {
+  from { opacity: 0.25; }
+}
+
+/* ---------------------------------------------------------
+   화면 전환 — 레시피로 들어올 때
+   흰 화면에서 왼쪽 사진 줄은 왼쪽 밖에서 → 제자리로 (위에서부터 차례로),
+   오른쪽 수식 카드는 가운데 카드만 오른쪽 끝 밖에서, 위아래 앞뒤 카드는 위·아래에서 → 제자리로, 이름은 마지막에 왼쪽에서 살짝
+   (다른 페이지의 '아래에서 올라오기 + 흰 막 걷힘'은 레시피에서는 쓰지 않음)
+   --------------------------------------------------------- */
+.page.recipe.is-entering {
+  transform: none;
+}
+
+.page.recipe.is-entering::after {
+  opacity: 0;
+}
+
+.page.recipe.is-active:not(.is-leaving)::after {
+  transition: none;
+}
+
+.recipe {
+  --rx-enter: 1.1s cubic-bezier(0.16, 1, 0.3, 1); /* 들어오는 시간과 곡선 — 빠르게 들어와 부드럽게 멈춤 */
+}
+
+.recipe.is-active .rx-thumb {
+  animation: rx-from-left var(--rx-enter) backwards;
+}
+
+/* 위에서부터 차례로 (보이는 5장) */
+.recipe.is-active .rx-thumb[data-slot="-2"] { animation-delay: 0s; }
+.recipe.is-active .rx-thumb[data-slot="-1"] { animation-delay: 0.06s; }
+.recipe.is-active .rx-thumb[data-slot="0"]  { animation-delay: 0.12s; }
+.recipe.is-active .rx-thumb[data-slot="1"]  { animation-delay: 0.18s; }
+.recipe.is-active .rx-thumb[data-slot="2"]  { animation-delay: 0.24s; }
+
+.recipe.is-active .rx-bar {
+  animation: rx-fade 0.8s var(--ease-out) 0.4s backwards;
+}
+
+.recipe.is-active .rx-info {
+  animation: rx-from-left-short 0.9s var(--ease-out) 0.45s backwards;
+}
+
+/* 수식 카드: 가운데 카드만 오른쪽 끝 밖에서, 위아래 앞뒤 카드는 위·아래에서 들어옴
+   (자리마다 출발 위치 --in-x / --in-y 만 다름 — 애니메이션 이름이 같아서 넘길 때 다시 재생되지 않음) */
+.rx-card {
+  --in-x: 0px;
+  --in-y: 0px;
+}
+
+.rx-card[data-slot="0"]  { --in-x: 100vw; }
+.rx-card[data-slot="-1"] { --in-y: calc(-520 * var(--px)); }
+.rx-card[data-slot="1"]  { --in-y: calc(520 * var(--px)); }
+
+.recipe.is-active .rx-card {
+  animation: rx-card-in var(--rx-enter) 0.08s backwards;
+}
+
+/* 위아래 카드는 가운데 카드보다 살짝 늦게 */
+.recipe.is-active .rx-card[data-slot="-1"],
+.recipe.is-active .rx-card[data-slot="1"] {
+  animation-delay: 0.22s;
+}
+
+@keyframes rx-from-left {
+  from { translate: calc(-340 * var(--px)) 0; }
+}
+
+@keyframes rx-from-left-short {
+  from { translate: calc(-40 * var(--px)) 0; opacity: 0; }
+}
+
+@keyframes rx-card-in {
+  from { translate: var(--in-x) var(--in-y); }
+}
+
+@keyframes rx-fade {
+  from { opacity: 0; }
+}
+
+/* ---------------------------------------------------------
+   화면 전환 — 레시피에서 나갈 때 (들어올 때를 거꾸로 재생)
+   사진 줄은 아래 사진부터 차례로 왼쪽 밖으로, 가운데 수식 카드는 오른쪽 밖으로 · 위아래 카드는 위·아래로, 이름·스크롤 표시는 먼저 사라짐
+   시간은 v2/index.html 의 BR.leaveTime(700ms) 안에 끝나게
+   --------------------------------------------------------- */
+.page.recipe.is-leaving {
+  transform: none;
+}
+
+.page.recipe.is-leaving::after {
+  opacity: 0;
+}
+
+.recipe {
+  --rx-leave: cubic-bezier(0.7, 0, 0.84, 0); /* 천천히 출발해 빠르게 빠져나감 */
+}
+
+.recipe.is-leaving .rx-thumb {
+  translate: calc(-340 * var(--px)) 0;
+  transition: translate 0.55s var(--rx-leave);
+}
+
+.recipe.is-leaving .rx-thumb[data-slot="2"]  { transition-delay: 0s; }
+.recipe.is-leaving .rx-thumb[data-slot="1"]  { transition-delay: 0.04s; }
+.recipe.is-leaving .rx-thumb[data-slot="0"]  { transition-delay: 0.08s; }
+.recipe.is-leaving .rx-thumb[data-slot="-1"] { transition-delay: 0.12s; }
+.recipe.is-leaving .rx-thumb[data-slot="-2"] { transition-delay: 0.14s; }
+
+/* 수식 카드: 가운데는 오른쪽 밖으로, 위아래 카드는 위·아래로 (들어올 때와 같은 자리로) */
+.recipe.is-leaving .rx-card {
+  translate: var(--in-x) var(--in-y);
+  transition: translate 0.65s var(--rx-leave);
+}
+
+.recipe.is-leaving .rx-card[data-slot="0"] {
+  transition-delay: 0.05s;
+}
+
+.recipe.is-leaving .rx-info,
+.recipe.is-leaving .rx-bar {
+  opacity: 0;
+  translate: calc(-40 * var(--px)) 0;
+  transition: opacity 0.3s var(--ease-out), translate 0.35s var(--rx-leave);
 }
