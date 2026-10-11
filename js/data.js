@@ -93,7 +93,7 @@ BR.breads = [
    q = k(200° - 28° / 25mm) 15'
    {(b) = 95° / 90·g}
 
-= (크루아상)`)
+= (P)`)
   },
   {
     // 사진: 빵 껍질 클로즈업 → 노션 레시피 중 바게트로 매칭
@@ -123,7 +123,7 @@ BR.breads = [
    q = k(230° - 20° / 60mm) 25'
    {(b) = 95° / 245·g}
 
-= (바게트)`)
+= (P)`)
   },
   {
     id: "pain-au-chocolat", kr: "팽오쇼콜라", en: "Pain au Chocolat", img: "assets/img/photo/pain-au-chocolat-02.webp",
@@ -158,7 +158,7 @@ BR.breads = [
    q = k(200° - 28° / 25mm) 15'
    {(b) = 95° / 100·g}
 
-= (팽오쇼콜라)`)
+= (P)`)
   },
   {
     id: "scone", kr: "스콘", en: "Scone", img: "assets/img/photo/scone-02.webp",
@@ -182,7 +182,7 @@ BR.breads = [
    q = k(200° - 4° / 20mm) 15'
    {(b) = 92° / 55·g}
 
-= (스콘)`)
+= (P)`)
   },
   {
     id: "pretzel", kr: "프레첼", en: "Pretzel", img: "assets/img/photo/pretzel-02.webp",
@@ -211,7 +211,7 @@ BR.breads = [
    q = k(220° - 27° / 25mm) 15'
    {(b) = 95° / 95·g}
 
-= (프레첼)`)
+= (P)`)
   },
   {
     id: "corn-bread", kr: "옥수수빵", en: "Corn Mayo Bread", img: "assets/img/photo/corn-bread-01.webp",
@@ -242,7 +242,7 @@ BR.breads = [
    q = k(190° - 32° / 15mm) 15'
    {(b) = 92° / 63·g}
 
-= (옥수수빵)`)
+= (P)`)
   },
   {
     id: "salt-bread", kr: "소금빵", en: "Salt Bread", img: "assets/img/photo/roll-01.webp",
@@ -275,7 +275,7 @@ BR.breads = [
    q = k(200° - 32° / 15mm) 15'
    {(b) = 93° / 63·g}
 
-= (소금빵)`)
+= (P)`)
   },
   {
     id: "simit", kr: "시미트", en: "Simit", img: "assets/img/photo/simit-01.webp",
@@ -305,7 +305,7 @@ BR.breads = [
    q = k(220° - 27° / 20mm) 15'
    {(b) = 94° / 95·g}
 
-= (시미트)`)
+= (P)`)
   },
   {
     id: "english-muffin", kr: "잉글리시 머핀", en: "English Muffin", img: "assets/img/photo/stacked-bread-02.webp",
@@ -334,7 +334,7 @@ BR.breads = [
 → (d⁴) × q = (b)
    q = k(160° - 27° / 20mm) 16'
 
-= (잉글리시 머핀)`)
+= (P)`)
   },
   {
     // 사진: 어두운 소라 모양 빵 → 노션 레시피 중 초코소라빵으로 매칭
@@ -369,7 +369,7 @@ BR.breads = [
 
 → (b) ⊂ (m²) = (p)
 
-= (초코소라빵)`)
+= (P)`)
   }
 ];
 
