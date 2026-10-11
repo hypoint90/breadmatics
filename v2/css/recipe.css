@@ -324,6 +324,13 @@
 
 .rx-card__line {
   display: block;
+  white-space: pre-wrap; /* 노션처럼 앞 들여쓰기 유지 */
+}
+
+/* 단계 사이 빈 줄 (노션 코드블록의 빈 줄) */
+.rx-card__gap {
+  display: block;
+  height: 0.6em;
 }
 
 /* 한글 상세 레시피 (노션) — 수식 아래. 피그마: 12px · 행간 1.5 · 폭 207, 수식과 52 간격
