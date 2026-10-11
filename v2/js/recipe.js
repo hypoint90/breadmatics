@@ -44,12 +44,15 @@ BR.pages.recipe = (() => {
       .map((ch) => (ch === " " ? " " : `<span class="rx-ch">${BR.esc(ch)}</span>`))
       .join("");
 
-  // 수식: 피그마처럼 들여쓰기·빈 줄 없이 한 줄씩
+  // 수식: 노션 코드블록 그대로 — 들여쓰기 유지, 빈 줄은 단계 사이 간격(.rx-card__gap)
   const formulaHTML = (lines) =>
     lines
-      .map((l) => l.trim())
-      .filter(Boolean)
-      .map((l) => `<span class="rx-card__line">${charsHTML(l)}</span>`)
+      .map((l) => l.replace(/s+$/, ""))
+      .map((l) =>
+        l
+          ? `<span class="rx-card__line">${charsHTML(l)}</span>`
+          : `<span class="rx-card__gap" aria-hidden="true"></span>`
+      )
       .join("");
 
   const renderInfo = (b) => {
