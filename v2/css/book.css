@@ -33,9 +33,9 @@
   line-height: 0.9;
 }
 
-/* 영문 큰 제목 — 메인 타이틀과 같은 세리프 */
+/* 영문 큰 제목 — 산세리프 (헬베티카 노이에) */
 .book__en {
-  font-family: var(--f-serif);
+  font-family: var(--f-sans);
   font-size: calc(102 * var(--px)); /* 150 → 128 → 20% 줄임 */
   line-height: 1;
   letter-spacing: -0.05em;

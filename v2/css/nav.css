@@ -46,13 +46,14 @@
 /* ---------- 탭 (평소 보이는 작은 카드) ---------- */
 .menu__tab {
   position: absolute;
-  top: calc(20 * var(--px)); /* 화면 위에서 20 띄움 */
+  /* 옷에 달린 택처럼 화면 위 끝에 붙어 있음 — 아래 끝(56)은 그대로, 위로만 길게 */
+  top: 0;
   left: 0; /* 영수증 왼쪽 끝과 맞춤 */
   display: flex;
   align-items: center;
   gap: calc(12 * var(--px));
-  height: calc(36 * var(--px));
-  padding: 0 calc(40 * var(--px)); /* 좌우 20 → 40 : 가로 40 넓게 */
+  height: calc(56 * var(--px));
+  padding: calc(20 * var(--px)) calc(90 * var(--px)) 0 calc(40 * var(--px)); /* 글자 자리는 그대로, 오른쪽으로 50 넓게 */
   background: var(--menu-bg);
   -webkit-backdrop-filter: var(--menu-blur);
   backdrop-filter: var(--menu-blur);
@@ -64,7 +65,7 @@
 
 /* 펼치면: 탭이 먼저 화면 위로 쑥 올라가고 → 이어서 영수증이 내려옴 */
 .menu.is-open .menu__tab {
-  transform: translateY(calc(-80 * var(--px)));
+  transform: translateY(calc(-100% - 20 * var(--px))); /* 택이 화면 위로 쏙 올라감 */
   transition: transform 0.28s var(--menu-lift);
 }
 
@@ -461,6 +462,13 @@
   color: #fff;
   mix-blend-mode: difference;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s var(--ease-out);
+}
+
+/* 누르는 범위를 글자 바깥까지 넓힘 — 메뉴얼북에서 버튼 주변을 눌러도 뒤의 '메뉴얼' 칸이 눌리지 않게 */
+.back::before {
+  content: "";
+  position: absolute;
+  inset: calc(-16 * var(--px)) calc(-24 * var(--px));
 }
 
 .back__title {

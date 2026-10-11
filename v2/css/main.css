@@ -58,7 +58,7 @@
 
 /* BREADMATICS */
 .mx-title__sans {
-  font-family: "Inter Tight", var(--f-sans);
+  font-family: "Inter Tight", var(--f-sans); /* 굵기가 부드럽게 바뀌는 가변 서체 */
   font-weight: 300;
   letter-spacing: -0.055em; /* 평소 자간 좁게 */
   white-space: nowrap;
@@ -196,13 +196,13 @@
   transition-delay: calc(var(--i, 0) * 0.12s);
 }
 
-/* 타이틀은 등장 모션 + 색 바뀜을 함께 (색은 지연 없이) */
+/* 타이틀은 등장 모션 + 색 바뀜을 함께 */
 .main.is-active .mx-title[data-reveal] {
   transition: opacity var(--dur-slow) var(--ease-out) calc(var(--i, 0) * 0.12s),
     transform var(--dur-slow) var(--ease-out) calc(var(--i, 0) * 0.12s), color 0.7s var(--ease-out);
 }
 
-/* 색: 마우스가 나가도 0.5초 유지 후 회색으로 (올릴 때는 바로 검정) */
+/* 마우스가 나갔을 때 (올릴 때는 바로 검정) */
 .main.is-active .mx-title[data-reveal]:not(:hover) {
   transition-delay: calc(var(--i, 0) * 0.12s), calc(var(--i, 0) * 0.12s), var(--mx-hold);
 }
@@ -314,4 +314,55 @@
 
 @keyframes mx-from-right {
   from { translate: 100vw 0; }
+}
+
+/* ---------------------------------------------------------
+   타이틀 오른쪽에 붙는 회색 수식 — RECIPE ) × Σ¹(F…
+   평소엔 오른쪽 밖에 숨어 있다가, 호버하면 오른쪽에서 부드럽게 들어와 붙고(.is-eq-in),
+   호버가 끝나면(유지 0.5초 뒤) 다시 오른쪽으로 빠져나감 — v2/js/main-title.js
+   --------------------------------------------------------- */
+.mx-eq {
+  position: absolute;
+  top: 0; /* 위치·크기는 js 가 괄호를 타이틀 위아래에 맞춰 정함 (main-title.js fitEq) */
+  left: calc(100% + 26 * var(--px)); /* 타이틀과 괄호 사이 여백 (6 → 26) */
+  z-index: -1; /* 타이틀 글자 뒤 */
+  font-family: var(--f-sans); /* 헬베티카 노이에 (없는 컴퓨터는 Helvetica → Arial) */
+  font-weight: 100; /* 300 → 200 → 100 (가장 얇게) */
+  font-size: calc(300 * var(--px)); /* 타이틀 두 줄 높이 */
+  line-height: 1;
+  letter-spacing: -0.035em; /* 자간 (-0.07 에서 50% 넓힘) */
+  text-transform: none;
+  white-space: nowrap;
+  color: #e6e6e6; /* 조금 더 연하게 (#dadada → #e6e6e6) */
+  pointer-events: none; /* 수식 위에 마우스가 있어도 호버로 치지 않음 */
+  opacity: 0;
+  transform: translateX(60vw);
+  /* 빠질 때: 오른쪽으로 */
+  transition: transform 0.6s cubic-bezier(0.55, 0, 0.75, 0.2), opacity 0.4s var(--ease-out) 0.2s;
+}
+
+/* 들어올 때: 오른쪽에서 부드럽게 미끄러져 들어와 천천히 멈춤 */
+.mx-title.is-eq-in .mx-eq {
+  opacity: 1;
+  transform: none;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s var(--ease-out);
+}
+
+/* 헬베티카 노이에가 없는 컴퓨터(윈도우 등) — Arial 은 얇은 굵기가 없어서
+   헬베티카와 닮은 Inter Tight 를 300 굵기로 대신 씀 (html.no-helvetica — v2/js/main-title.js) */
+.no-helvetica .mx-eq {
+  font-family: "Inter Tight", var(--f-sans);
+  font-weight: 300;
+}
+
+/* 수식 안 기호 — × 는 30% 작게, × 와 Σ… 는 괄호 ) 의 세로 가운데에 맞춤
+   (얼마나 내릴지는 main-title.js fitEq 가 글자 높이를 재서 top 으로 정함) */
+.mx-eq__x {
+  position: relative;
+  font-size: 0.7em;
+}
+
+.mx-eq__rest {
+  position: relative;
+  font-size: 0.75em; /* Σ 이후 수식 작게 */
 }
