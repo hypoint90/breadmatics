@@ -260,7 +260,7 @@
 }
 
 .rx-card[data-slot="0"] .rx-card__bg {
-  opacity: 0.3;
+  opacity: 0.18; /* 0.3 에서 40% 낮춤 */
 }
 
 /* 회색 유리 */
