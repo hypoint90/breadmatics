@@ -22,6 +22,7 @@ BR.pages.manual = (() => {
   const SMOOTH = 0.12; // 읽기 스크롤 부드러움 (0~1, 작을수록 미끄러짐)
   const END_RATIO = 0.55; // 설명 끝이 화면 높이의 몇 % 지점까지 올라오면 '다 읽음'
   const PEEK = 40; // 열린 항목 위로 남겨두는 여백 (피그마 px)
+  const INTRO_DELAY = 450; // (BR.manualIntro 일 때) 들어온 뒤 01 이 열리기 시작하기까지(ms)
 
   // 부드러운 가속·감속 (easeInOutCubic)
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -34,6 +35,8 @@ BR.pages.manual = (() => {
   let anim = null; // 진행 중인 열림/닫힘 애니메이션
   let raf = null;
   let m = null; // 측정값
+  let intro = false; // 들어올 때 모두 닫힌 채 기다리는 중 (BR.manualIntro — 2안)
+  let introTimer = null;
 
   /* ---------- 렌더 ---------- */
   // 표: cols(머리줄)는 있을 때만 표시
@@ -108,6 +111,10 @@ BR.pages.manual = (() => {
 
   /* 애니메이션 없이 현재 상태 그대로 배치 */
   const layoutStatic = () => {
+    if (intro) {
+      bodies.forEach((b) => (b.style.height = "0px"));
+      return;
+    }
     bodies.forEach((b, i) => (b.style.height = i === active ? `${m.contents[i]}px` : "0px"));
     sections.forEach((s) => (s.style.transform = ""));
   };
@@ -181,7 +188,7 @@ BR.pages.manual = (() => {
 
   /* ---------- 입력 ---------- */
   const scrollBy = (delta) => {
-    if (anim) return; // 열리고 닫히는 중에는 입력 무시
+    if (anim || intro) return; // 열리고 닫히는 중에는 입력 무시
     if (!m) relayout();
     const { start, end } = m;
     const next = target + delta;
@@ -263,7 +270,7 @@ BR.pages.manual = (() => {
 
     list.addEventListener("click", (e) => {
       const head = e.target.closest(".m-item__head");
-      if (!head) return;
+      if (!head || intro) return;
       openItem(Number(head.parentElement.dataset.index));
     });
   };
@@ -273,6 +280,9 @@ BR.pages.manual = (() => {
     cancelAnimationFrame(raf);
     raf = null;
     anim = null;
+    // 나갈 때(leave) 붙인 닫힘 전환 제거
+    bodies.forEach((b) => (b.style.transition = ""));
+    sections.forEach((s) => (s.style.transition = ""));
     active = 0;
     push = 0;
     target = y = 0;
@@ -280,7 +290,40 @@ BR.pages.manual = (() => {
     setClasses(0);
     items.forEach((li) => li.style.setProperty("--read", 0));
     relayout();
+
+    // 2안: 번호 칸들이 모두 닫혀 모여 있다가 → 01 이 열리며 내용이 보임
+    clearTimeout(introTimer);
+    intro = false;
+    if (BR.manualIntro) {
+      intro = true;
+      setClasses(-1);
+      layoutStatic();
+      sections[0].style.transform = `translate3d(0, ${m.rise}px, 0)`;
+      introTimer = setTimeout(() => {
+        intro = false;
+        setClasses(0);
+        anim = { t0: performance.now(), open: 0, close: null, fromY: 0, toY: 0 };
+        animate();
+      }, BR.manualIntroDelay ?? INTRO_DELAY); // 메뉴얼북에서 검정 면으로 넘어올 땐 면이 걷힌 뒤에 열림 (v2/js/book-wipe.js)
+    }
   };
 
-  return { init, enter };
+  // 2안: 나갈 때 — 들어올 때(01 이 열림)를 거꾸로: 열려 있던 항목이 닫히며 내용이 선 뒤로 들어감
+  //      (페이지는 그동안 아래로 내려가며 흰 막에 덮임 — v2/css/base.css .page.is-leaving)
+  const leave = () => {
+    clearTimeout(introTimer);
+    if (!BR.manualIntro || !m) return;
+    cancelAnimationFrame(raf);
+    raf = null;
+    anim = null;
+    intro = true; // 닫히는 동안 휠·클릭 무시
+    const close = "0.5s cubic-bezier(0.7, 0, 0.84, 0)";
+    bodies[active].style.transition = `height ${close}`;
+    sections[active].style.transition = `transform ${close}`;
+    bodies[active].style.height = "0px";
+    sections[active].style.transform = `translate3d(0, ${-m.rise * 0.5}px, 0)`;
+    setClasses(-1);
+  };
+
+  return { init, enter, leave };
 })();

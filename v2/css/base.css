@@ -164,16 +164,18 @@ ol {
   transition: none;
 }
 
-/* 나가는 페이지: 위로 올라가며 흰 막에 덮여 사라짐 */
+/* 나가는 페이지: 들어올 때(아래에서 올라오며 막이 걷힘)를 거꾸로 — 아래로 내려가며 흰 막에 덮여 사라짐
+   시간은 v2/index.html 의 BR.leaveTime(700ms) 과 맞춤
+   (레시피 · 나만의 빵 · 메뉴얼북은 각 페이지 css 의 '나갈 때'에서 따로 거꾸로 재생) */
 .page.is-leaving {
-  transform: translateY(calc(var(--page-shift) * -1));
-  transition: transform 0.42s cubic-bezier(0.55, 0, 0.75, 0.2);
+  transform: translateY(var(--page-shift));
+  transition: transform 0.7s cubic-bezier(0.64, 0, 0.78, 0);
 }
 
 .page.is-leaving::after {
   opacity: 1;
   background: var(--c-white);
-  transition: opacity 0.42s cubic-bezier(0.4, 0, 1, 1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 1, 1) 0.2s;
 }
 
 /* 메인은 내비 아래가 아니라 화면 전체를 씀 */

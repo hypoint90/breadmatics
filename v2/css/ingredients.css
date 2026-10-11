@@ -299,8 +299,11 @@
   z-index: 10;
 }
 
+/* 30% 크게 (글자 16 → 20.8, 괄호 간격·여백도 같은 비율) */
 .ing__toggle .pill {
-  font-size: calc(16 * var(--px));
+  gap: calc(13 * var(--px));
+  padding: calc(7.8 * var(--px)) calc(10.4 * var(--px));
+  font-size: calc(20.8 * var(--px));
 }
 
 /* 꺾쇠 아이콘은 쓰지 않음 (괄호가 대신함) */
@@ -387,3 +390,4 @@
 .ing-col.is-center {
   cursor: zoom-out;
 }
+
