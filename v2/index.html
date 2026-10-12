@@ -210,6 +210,8 @@
       [BR.ingredients, BR.mainSlides, BR.breads].forEach((list) =>
         list.forEach((x) => x.img && !x.img.startsWith("../") && (x.img = "../" + x.img))
       );
+      // 재료 사진은 모든 재료가 준비될 때까지 2안에서는 쓰지 않음 (지금은 소금·이스트 2개만 있어서)
+      BR.ingredients.forEach((x) => (x.img = null));
     </script>
     <script>
       BR.manualIntro = true; // 메뉴얼: 들어올 때 번호 칸들이 모여 있다가 01 이 열림 (js/manual.js)
