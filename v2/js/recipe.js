@@ -270,7 +270,7 @@ BR.pages.recipe = (() => {
       .map(
         (b, i) =>
           `<article class="rx-card" data-index="${i}">
-             <img class="rx-card__bg" src="${b.img.replace("/photo/", "/photo-small/")}" alt="" loading="lazy">
+             <img class="rx-card__bg" src="${b.img}" alt="" loading="lazy">
              <div class="rx-card__glass">
                <div class="rx-card__scroll">
                  <div class="rx-card__text">
